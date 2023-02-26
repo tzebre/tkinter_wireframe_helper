@@ -1,7 +1,8 @@
 import tkinter as tk
+from tkinter import filedialog
 import customtkinter as ctk
 import random
-from jinja_make import save
+from Template.jinja_make import save
 
 _DEBUG_ = False
 
@@ -205,7 +206,8 @@ class Application(ctk.CTk):
         row = self.scale_value["row"]
         col = self.scale_value["col"]
         frame = Application.frame_to_save
-        save(row, col, frame, _DEBUG_)
+        directory = tk.filedialog.askdirectory()
+        save(row, col, frame, _DEBUG_, directory)
 
     def get_slider_value(self):
         """
@@ -408,6 +410,11 @@ class Application(ctk.CTk):
         Application.frame_to_save[name]["Type"] = type
         print(Application.frame_to_save[name]["Type"])
 
+def main():
+    app = Application()
+    app.mainloop()
 
-app = Application()
-app.mainloop()
+if __name__ == '__main__':
+    main()
+
+

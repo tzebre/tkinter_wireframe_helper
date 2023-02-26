@@ -113,7 +113,9 @@ def render(row_dict, col_dict, frame_dict, debug):
                            widgets_list=widgets_list)
 
 
-def save(row_dict, col_dict, frame_dict, debug):
-    with open('my_template.py', 'w') as f:
+def save(row_dict, col_dict, frame_dict, debug, dest):
+    print(dest)
+    print("save")
+    with open(f"{dest}/my_template.py", 'w') as f:
         output = render(row_dict, col_dict, frame_dict, debug)
         f.write(output)

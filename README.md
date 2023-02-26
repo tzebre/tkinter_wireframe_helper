@@ -7,7 +7,7 @@ Alpha avec bug
 Faire des issues GitHub pour toute demande de features
 
 Tuto 
-Lancer debug_tkinter.py  
+Lancer main.py  
 ![choix_nb](tuto/choix_nb.png)  
 Choix du nombre de lignes et de colonnes
 
