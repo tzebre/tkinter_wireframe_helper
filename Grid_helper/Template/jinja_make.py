@@ -2,6 +2,9 @@ from jinja2 import Template
 
 # Define the template
 template_str = """
+# Made with tkinter_grid_helper
+# GitHub : https://github.com/tzebre/tkinter_grid_helper
+# By MATHIEU Theo theo.mathieu@insa-lyon.fr
 import tkinter as tk
 import customtkinter as ctk
 import random
