@@ -22,6 +22,9 @@ class Customframe(tk.Frame):
         self.row = row
         self.col = col
         self.dict_args = kwargs
+        self.btn_color = None
+        self.color = ["silver", "grey"]
+        self.selected = {"row": None, "column": None, "rownspan": None, "columnspan": None}
         self.grid_config()
 
     def grid_config(self):
@@ -30,14 +33,34 @@ class Customframe(tk.Frame):
         for i, c in enumerate(self.col):
             self.grid_columnconfigure(i, weight=c)
         if self.debug:
+            self.all_btn = {}
             for r_i, r in enumerate(self.row):
+                self.all_btn[r_i] = {}
                 for c_i, c in enumerate(self.col):
-                    test = ctk.CTkFrame(master=self, fg_color=random_color(True), border_width=2, border_color="red")
-                    test.grid(row=r_i, column=c_i, sticky="nsew")
-                    test.grid_rowconfigure(0, weight=1)
-                    test.grid_columnconfigure(0, weight=1)
-                    txt = ctk.CTkLabel(master=test, text=f"r:{r_i}, rw:{r}, c:{c_i}, cw:{c}")
-                    txt.grid(row=0, column=0)
+                    if ((r_i + 1) + c_i) % 2 == 0:
+                        val = 0
+                    else:
+                        val = 1
+                    self.all_btn[r_i][c_i] = {"widget": None, "selected": None}
+                    self.all_btn[r_i][c_i]["widget"] = ctk.CTkButton(master=self, fg_color=self.color[val],
+                                                                     border_width=2, border_color="firebrick",
+                                                                     text=f"r:{r_i}, rw:{r}, c:{c_i}, cw:{c}, {val}",
+                                                                     command=lambda r=r_i, c=c_i: self.click(r, c))
+                    self.all_btn[r_i][c_i]["widget"].grid(row=r_i, column=c_i, sticky="nsew")
+                    self.all_btn[r_i][c_i]["widget"].grid_rowconfigure(0, weight=1)
+                    self.all_btn[r_i][c_i]["widget"].grid_columnconfigure(0, weight=1)
+
+    def click(self, r, c):
+        if self.all_btn[r][c]["selected"]:
+            if ((r + 1) + c) % 2 == 0:
+                val = 0
+            else:
+                val = 1
+            self.all_btn[r][c]["widget"].configure(fg_color=self.color[val])
+            self.all_btn[r][c]["selected"] = False
+        else:
+            self.all_btn[r][c]["widget"].configure(fg_color="darkgreen")
+            self.all_btn[r][c]["selected"] = True
 
 
 class Application(ctk.CTk):
@@ -47,6 +70,7 @@ class Application(ctk.CTk):
         self.scale_value = {"row": {}, "col": {}}
         self.config()
         self.attributes("-topmost", True)
+        self.saved = {}
 
     def config(self):
         self.grid_columnconfigure(0, weight=1)
@@ -118,8 +142,7 @@ class Application(ctk.CTk):
                                       troughcolor='gray92', activebackground="#1F6AA5",
                                       command=lambda value, c=i, r=line: self.scale_mvd(value, c, r))
                     slider.grid(row=line, column=0, sticky="nsew", padx=3)
-            display_btn = ctk.CTkButton(master=self, text="Validate", command=self.display)
-            display_btn.grid(row=3, column=0, columnspan=2)
+            self.add_group()
             self.create_toplevel()
 
     def create_toplevel(self):
@@ -136,6 +159,47 @@ class Application(ctk.CTk):
         self.top_level.grid_rowconfigure(0, weight=1)
         self.custom = Customframe(self.top_level, self.row, self.col, True)
         self.custom.grid(row=0, column=0, sticky="nsew")
+
+    def add_group(self):
+        row = 3 + len(self.saved)
+        display_btn = ctk.CTkButton(master=self, text="save", command=lambda r=row: self.saving_group(r))
+        display_btn.grid(row=row, column=0)
+        display_Label = ctk.CTkEntry(master=self, placeholder_text="Name of group")
+        display_Label.grid(row=row, column=1)
+        self.saved[row] = {"btn": display_btn, "entry": display_Label}
+
+    def saving_group(self, row):
+        self.saved[row]["btn"].configure(text="delete", command=lambda r=row: self.delete(r))
+        self.saved[row]["entry"].configure(state = "disabled")
+        self.add_group()
+
+    def delete(self, row):
+        self.saved[row]["btn"].destroy()
+        self.saved[row]["entry"].destroy()
+        self.saved.pop(row)
+        self.place_group()
+
+    def place_group(self):
+        new_saved = {}
+        for i,r in enumerate(self.saved.values()):
+            txt = r["btn"].cget("text")
+            entry_txt = r["entry"].get()
+            print(txt, entry_txt)
+            if txt == "delete":
+                str_var = tk.StringVar()
+                str_var.set(entry_txt)
+                display_btn = ctk.CTkButton(master=self, text=txt, command=lambda row=i+3: self.delete(row))
+                display_Label = ctk.CTkEntry(master=self, textvariable = str_var, state="disabled")
+            else:
+                display_btn = ctk.CTkButton(master=self, text=txt, command=lambda row=i+3: self.saving_group(row))
+                display_Label = ctk.CTkEntry(master=self, placeholder_text=entry_txt)
+            display_btn.grid(row=i+3, column=0)
+            display_Label.grid(row=i+3, column=1)
+            new_saved[i+3] = {"btn": display_btn, "entry": display_Label}
+            r["btn"].destroy()
+            r["entry"].destroy()
+        self.saved = new_saved
+        print(self.saved)
 
 
 
