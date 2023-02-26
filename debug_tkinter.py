@@ -105,6 +105,7 @@ class Application(ctk.CTk):
         self.col = list(self.scale_value["col"].values())
 
     def scale_mvd(self, value, c, r):
+        self.delete_all_group()
         if c == 0:
             self.scale_value["row"][r] = int(value)
         else:

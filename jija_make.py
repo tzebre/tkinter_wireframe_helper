@@ -54,12 +54,12 @@ class Application(ctk.CTk):
     def place_frame(self):
         for frame in self.frame:
             value = self.frame[frame]
-            self.placed[frame] = {}
             if self.debug:
                 widget = ctk.CTkFrame(master=self, fg_color=random_color(True))
             else:
                 widget = ctk.CTkFrame(master=self, border_width=1, border_color="black")
             widget.grid(row=value[0], column=value[1],rowspan = value[2],columnspan=value[3], sticky="nsew")
+            self.placed[frame] = {"widget":widget, "coord":(value)}
 
 
 app = Application({{debug}})
@@ -68,12 +68,6 @@ app.mainloop()
 """
 template = Template(template_str)
 
-"""
-row_dict = {0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1}
-col_dict = {0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
-frame_dict = {'middle': (2, 2, 3, 2), 'right': (2, 4, 2, 3)}
-debug = True
-"""
 
 # Render the template
 def render(row_dict, col_dict, frame_dict, debug):
