@@ -1,6 +1,7 @@
 import tkinter as tk
 import customtkinter as ctk
 import random
+from jija_make import save
 
 
 def random_color(hex_val):
@@ -48,8 +49,6 @@ class Customframe(tk.Frame):
                                                                      text=f"r:{r_i}, rw:{r}, c:{c_i}, cw:{c}, {val}",
                                                                      command=lambda r=r_i, c=c_i: self.click(r, c))
                     self.all_btn[r_i][c_i]["widget"].grid(row=r_i, column=c_i, sticky="nsew")
-                    self.all_btn[r_i][c_i]["widget"].grid_rowconfigure(0, weight=1)
-                    self.all_btn[r_i][c_i]["widget"].grid_columnconfigure(0, weight=1)
 
     def click(self, r, c):
         if self.all_btn[r][c]["selected"]:
@@ -64,13 +63,14 @@ class Customframe(tk.Frame):
             self.all_btn[r][c]["selected"] = True
 
     def big_frame(self, row, column, rowspan, columnspan, name):
-        self.big_frm_dict[name] = ctk.CTkButton(master = self, fg_color=random_color(True), text= name, state="disabled")
+        self.big_frm_dict[name] = ctk.CTkButton(master=self, fg_color=random_color(True), text=name, state="disabled")
         self.big_frm_dict[name].grid(row=row, column=column, rowspan=rowspan, columnspan=columnspan, sticky="nsew")
 
 
 class Application(ctk.CTk):
     def __init__(self):
         super().__init__()
+        self.frame_to_save = {}
         self.title("Debug")
         self.scale_value = {"row": {}, "col": {}}
         self.config()
@@ -90,7 +90,15 @@ class Application(ctk.CTk):
         self.row_entry.grid(row=0, column=0)
         self.col_entry.grid(row=0, column=1)
         self.ok_btn = ctk.CTkButton(master=self, text="Validate", command=self.place_slider)
-        self.ok_btn.grid(row=1, column=0, columnspan=2)
+        self.ok_btn.grid(row=1, column=0)
+        self.exp_code = ctk.CTkButton(master=self, text="export code", command=self.export_code)
+        self.exp_code.grid(row=1, column=1)
+
+    def export_code(self):
+        row = self.scale_value["row"]
+        col = self.scale_value["col"]
+        frame = self.frame_to_save
+        save(row, col, frame, True)
 
     def display(self):
         self.row = list(self.scale_value["row"].values())
@@ -187,10 +195,11 @@ class Application(ctk.CTk):
         group_name = self.saved[row]["entry"].get()
         self.custom.big_frm_dict[group_name].destroy()
         self.custom.big_frm_dict.pop(group_name)
+        self.frame_to_save.pop(group_name)
         for case in self.custom_frame[group_name]["coords"]:
             self.custom.all_btn[case[0]][case[1]]["widget"].configure(state="normal")
             self.custom.all_btn[case[0]][case[1]]["selected"] = True
-            self.custom.click(case[0],case[1])
+            self.custom.click(case[0], case[1])
         self.custom_frame.pop(group_name)
         self.saved[row]["btn"].destroy()
         self.saved[row]["entry"].destroy()
@@ -217,7 +226,6 @@ class Application(ctk.CTk):
             r["entry"].destroy()
         self.saved = new_saved
 
-
     def get_selected_btn(self, group_name):
         color = random_color(True)
         for row in self.custom.all_btn:
@@ -225,13 +233,14 @@ class Application(ctk.CTk):
                 if self.custom.all_btn[row][col]["selected"]:
                     self.custom.all_btn[row][col]["selected"] = False
                     if group_name not in self.custom_frame:
-                        self.custom_frame[group_name] = {"coords":[(row, col)], "frame":None}
+                        self.custom_frame[group_name] = {"coords": [(row, col)], "frame": None}
                     else:
                         self.custom_frame[group_name]["coords"].append((row, col))
                     self.custom.all_btn[row][col]["widget"].configure(state="disabled", fg_color=color)
 
     def delete_all_group(self):
         self.custom_frame = {}
+        self.frame_to_save = {}
         for r in self.saved.values():
             r["btn"].destroy()
             r["entry"].destroy()
@@ -247,16 +256,12 @@ class Application(ctk.CTk):
             col_list.append(c[1])
         row_list = list(set(row_list))
         col_list = list(set(col_list))
-        print(row_list, col_list)
         row = min(row_list)
         col = min(col_list)
-        rowspan = (max(row_list)-row)+1
-        columnspan = (max(col_list)-col)+1
-        print(row, col, rowspan, columnspan, group_name)
+        rowspan = (max(row_list) - row) + 1
+        columnspan = (max(col_list) - col) + 1
+        self.frame_to_save[group_name] = (row, col, rowspan, columnspan)
         self.custom.big_frame(row, col, rowspan, columnspan, group_name)
-
-
-
 
 
 app = Application()
