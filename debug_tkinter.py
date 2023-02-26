@@ -18,6 +18,7 @@ def random_color(hex_val):
 class Customframe(tk.Frame):
     def __init__(self, master, row=None, col=None, debug=False, **kwargs):
         super().__init__(master)
+        self.big_frm_dict = {}
         self.debug = debug
         self.row = row
         self.col = col
@@ -61,6 +62,10 @@ class Customframe(tk.Frame):
         else:
             self.all_btn[r][c]["widget"].configure(fg_color="darkgreen")
             self.all_btn[r][c]["selected"] = True
+
+    def big_frame(self, row, column, rowspan, columnspan, name):
+        self.big_frm_dict[name] = ctk.CTkButton(master = self, fg_color=random_color(True), text= name)
+        self.big_frm_dict[name].grid(row=row, column=column, rowspan=rowspan, columnspan=columnspan, sticky="nsew")
 
 
 class Application(ctk.CTk):
@@ -175,11 +180,14 @@ class Application(ctk.CTk):
         self.saved[row]["entry"].configure(state="disabled")
         group_name = self.saved[row]["entry"].get()
         self.get_selected_btn(group_name)
+        self.group_frame(group_name)
         self.add_group()
 
     def delete(self, row):
         group_name = self.saved[row]["entry"].get()
-        for case in self.custom_frame[group_name]:
+        self.custom.big_frm_dict[group_name].destroy()
+        self.custom.big_frm_dict.pop(group_name)
+        for case in self.custom_frame[group_name]["coords"]:
             self.custom.all_btn[case[0]][case[1]]["widget"].configure(state="normal")
             self.custom.all_btn[case[0]][case[1]]["selected"] = True
             self.custom.click(case[0],case[1])
@@ -208,7 +216,7 @@ class Application(ctk.CTk):
             r["btn"].destroy()
             r["entry"].destroy()
         self.saved = new_saved
-        print(self.saved)
+
 
     def get_selected_btn(self, group_name):
         color = random_color(True)
@@ -217,9 +225,9 @@ class Application(ctk.CTk):
                 if self.custom.all_btn[row][col]["selected"]:
                     self.custom.all_btn[row][col]["selected"] = False
                     if group_name not in self.custom_frame:
-                        self.custom_frame[group_name] = [(row, col)]
+                        self.custom_frame[group_name] = {"coords":[(row, col)], "frame":None}
                     else:
-                        self.custom_frame[group_name].append((row, col))
+                        self.custom_frame[group_name]["coords"].append((row, col))
                     self.custom.all_btn[row][col]["widget"].configure(state="disabled", fg_color=color)
 
     def delete_all_group(self):
@@ -229,6 +237,23 @@ class Application(ctk.CTk):
             r["entry"].destroy()
         self.saved = {}
         self.add_group()
+
+    def group_frame(self, group_name):
+        coords = self.custom_frame[group_name]["coords"]
+        row_list = []
+        col_list = []
+        for c in coords:
+            row_list.append(c[0])
+            col_list.append(c[1])
+        row_list = list(set(row_list))
+        col_list = list(set(col_list))
+        print(row_list, col_list)
+        row = min(row_list)
+        col = min(col_list)
+        rowspan = (max(row_list)-row)+1
+        columnspan = (max(col_list)-col)+1
+        print(row, col, rowspan, columnspan, group_name)
+        self.custom.big_frame(row, col, rowspan, columnspan, group_name)
 
 
 
