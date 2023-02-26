@@ -11,14 +11,14 @@ Lancer debug_tkinter.py
 ![choix_nb](tuto/choix_nb.png)  
 Choix du nombre de lignes et de colonnes
 
-Cliquer sur Validate 
+Cliquez sur Validate 
 Une grille s'affiche, vous pouvez modifier la taille de chaque ligne ou colonne grace au sliders.
 ![choix_weight](tuto/choix_weight.png)
 
-Cliquer sur les cases que vous voulez regrouper elles deviennent vertes
+Cliquez sur les cases que vous voulez regrouper elles deviennent vertes
 ![select](tuto/select_frame.png)
 
-Entrer un nom pour ce groupement puis cliquer sur save 
+Entrez un nom pour ce groupement puis cliquer sur save 
 ![saved](tuto/Frame_created.png)
 
 Voilà votre futur groupement maintenant choisissez le type de widget qui sera placé à l'intérieur
