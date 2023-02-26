@@ -7,7 +7,7 @@ Alpha avec bug
 Faire des issues GitHub pour toute demande de features
 
 Tuto 
-Lancer main.py  
+Lancer Grid_helper/main.py  
 ![choix_nb](tuto/choix_nb.png)  
 Choix du nombre de lignes et de colonnes
 
