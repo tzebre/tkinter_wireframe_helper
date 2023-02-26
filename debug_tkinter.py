@@ -4,6 +4,9 @@ import random
 from jinja_make import save
 
 _DEBUG_ = False
+
+
+
 def random_color(hex_val):
     """
 
@@ -51,6 +54,7 @@ class Customframe(tk.Frame):
             big_frame(row, column, rowspan, columnspan, name): Creates a big frame.
 
         """
+
     def __init__(self, master, row=None, col=None, **kwargs):
         super().__init__(master)
         self.big_frm_dict = {}
@@ -120,11 +124,26 @@ class Customframe(tk.Frame):
             columnspan : nb of col to expend
             nam : name of the group
         """
-        self.big_frm_dict[name] = ctk.CTkButton(master=self, fg_color=random_color(True), text=name, state="disabled")
-        self.big_frm_dict[name].grid(row=row, column=column, rowspan=rowspan, columnspan=columnspan, sticky="nsew")
+        frame = ctk.CTkFrame(master=self, fg_color=random_color(True), border_width=2, border_color="firebrick")
+        frame.grid(row=row, column=column, rowspan=rowspan, columnspan=columnspan, sticky="nsew")
+        frame.grid_rowconfigure(0, weight=1)
+        frame.grid_columnconfigure(0, weight=1)
+        self.big_frm_dict[name] = {"frame": frame, "widget": None}
+        combobox = ctk.CTkOptionMenu(master=frame,
+                                     values=["Frame", "ScrollableFrame", "Textbox", "Button", "Label", "Entry",
+                                             "OptionMenu",
+                                             "SegmentedButton", "Switch", "Checkbox", "RadioButton", "Slider"],
+                                     command=lambda event, name=name: self.get_combovalue(event, name))
+        combobox.grid(row=0, column=0)
+
+    def get_combovalue(self, event, name):
+        self.big_frm_dict[name]["widget"] = event
+        Application.change_type(event, name)
 
 
 class Application(ctk.CTk):
+    frame_to_save = {}
+
     def __init__(self):
         """
         Init a new instance of class Application
@@ -155,7 +174,6 @@ class Application(ctk.CTk):
         self.exp_code = None
         self.row = None
         self.col = None
-        self.frame_to_save = {}
         self.title("Debug")
         self.scale_value = {"row": {}, "col": {}}
         self.config()
@@ -186,7 +204,7 @@ class Application(ctk.CTk):
         """
         row = self.scale_value["row"]
         col = self.scale_value["col"]
-        frame = self.frame_to_save
+        frame = Application.frame_to_save
         save(row, col, frame, _DEBUG_)
 
     def get_slider_value(self):
@@ -307,7 +325,7 @@ class Application(ctk.CTk):
             row : Row of the group to delete
         """
         group_name = self.saved[row]["entry"].get()
-        self.custom.big_frm_dict[group_name].destroy()
+        self.custom.big_frm_dict[group_name]["frame"].destroy()
         self.custom.big_frm_dict.pop(group_name)
         self.frame_to_save.pop(group_name)
         for case in self.custom_frame[group_name]["coords"]:
@@ -362,7 +380,7 @@ class Application(ctk.CTk):
         Delete all vlues saved related to customframe
         """
         self.custom_frame = {}
-        self.frame_to_save = {}
+        Application.frame_to_save = {}
         for r in self.saved.values():
             r["btn"].destroy()
             r["entry"].destroy()
@@ -382,8 +400,13 @@ class Application(ctk.CTk):
         col = min(col_list)
         rowspan = (max(row_list) - row) + 1
         columnspan = (max(col_list) - col) + 1
-        self.frame_to_save[group_name] = (row, col, rowspan, columnspan)
+        Application.frame_to_save[group_name] = {"coords": (row, col, rowspan, columnspan), "Type": None}
         self.custom.big_frame(row, col, rowspan, columnspan, group_name)
+
+    @classmethod
+    def change_type(cls, type, name):
+        Application.frame_to_save[name]["Type"] = type
+        print(Application.frame_to_save[name]["Type"])
 
 
 app = Application()
