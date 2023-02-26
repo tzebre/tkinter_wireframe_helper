@@ -64,7 +64,7 @@ class Customframe(tk.Frame):
             self.all_btn[r][c]["selected"] = True
 
     def big_frame(self, row, column, rowspan, columnspan, name):
-        self.big_frm_dict[name] = ctk.CTkButton(master = self, fg_color=random_color(True), text= name)
+        self.big_frm_dict[name] = ctk.CTkButton(master = self, fg_color=random_color(True), text= name, state="disabled")
         self.big_frm_dict[name].grid(row=row, column=column, rowspan=rowspan, columnspan=columnspan, sticky="nsew")
 
 
