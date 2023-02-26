@@ -71,6 +71,7 @@ class Application(ctk.CTk):
         self.config()
         self.attributes("-topmost", True)
         self.saved = {}
+        self.custom_frame = {}
 
     def config(self):
         self.grid_columnconfigure(0, weight=1)
@@ -148,6 +149,7 @@ class Application(ctk.CTk):
     def create_toplevel(self):
         try:
             self.top_level.destroy()
+            self.delete_all_group()
         except:
             pass
         self.top_level = tk.Toplevel(self)
@@ -170,10 +172,18 @@ class Application(ctk.CTk):
 
     def saving_group(self, row):
         self.saved[row]["btn"].configure(text="delete", command=lambda r=row: self.delete(r))
-        self.saved[row]["entry"].configure(state = "disabled")
+        self.saved[row]["entry"].configure(state="disabled")
+        group_name = self.saved[row]["entry"].get()
+        self.get_selected_btn(group_name)
         self.add_group()
 
     def delete(self, row):
+        group_name = self.saved[row]["entry"].get()
+        for case in self.custom_frame[group_name]:
+            self.custom.all_btn[case[0]][case[1]]["widget"].configure(state="normal")
+            self.custom.all_btn[case[0]][case[1]]["selected"] = True
+            self.custom.click(case[0],case[1])
+        self.custom_frame.pop(group_name)
         self.saved[row]["btn"].destroy()
         self.saved[row]["entry"].destroy()
         self.saved.pop(row)
@@ -181,25 +191,46 @@ class Application(ctk.CTk):
 
     def place_group(self):
         new_saved = {}
-        for i,r in enumerate(self.saved.values()):
+        for i, r in enumerate(self.saved.values()):
             txt = r["btn"].cget("text")
             entry_txt = r["entry"].get()
-            print(txt, entry_txt)
             if txt == "delete":
                 str_var = tk.StringVar()
                 str_var.set(entry_txt)
-                display_btn = ctk.CTkButton(master=self, text=txt, command=lambda row=i+3: self.delete(row))
-                display_Label = ctk.CTkEntry(master=self, textvariable = str_var, state="disabled")
+                display_btn = ctk.CTkButton(master=self, text=txt, command=lambda row=i + 3: self.delete(row))
+                display_Label = ctk.CTkEntry(master=self, textvariable=str_var, state="disabled")
             else:
-                display_btn = ctk.CTkButton(master=self, text=txt, command=lambda row=i+3: self.saving_group(row))
+                display_btn = ctk.CTkButton(master=self, text=txt, command=lambda row=i + 3: self.saving_group(row))
                 display_Label = ctk.CTkEntry(master=self, placeholder_text=entry_txt)
-            display_btn.grid(row=i+3, column=0)
-            display_Label.grid(row=i+3, column=1)
-            new_saved[i+3] = {"btn": display_btn, "entry": display_Label}
+            display_btn.grid(row=i + 3, column=0)
+            display_Label.grid(row=i + 3, column=1)
+            new_saved[i + 3] = {"btn": display_btn, "entry": display_Label}
             r["btn"].destroy()
             r["entry"].destroy()
         self.saved = new_saved
         print(self.saved)
+
+    def get_selected_btn(self, group_name):
+        color = random_color(True)
+        for row in self.custom.all_btn:
+            for col in self.custom.all_btn[row]:
+                if self.custom.all_btn[row][col]["selected"]:
+                    self.custom.all_btn[row][col]["selected"] = False
+                    if group_name not in self.custom_frame:
+                        self.custom_frame[group_name] = [(row, col)]
+                    else:
+                        self.custom_frame[group_name].append((row, col))
+                    self.custom.all_btn[row][col]["widget"].configure(state="disabled", fg_color=color)
+
+    def delete_all_group(self):
+        self.custom_frame = {}
+        for r in self.saved.values():
+            r["btn"].destroy()
+            r["entry"].destroy()
+        self.saved = {}
+        self.add_group()
+
+
 
 
 
