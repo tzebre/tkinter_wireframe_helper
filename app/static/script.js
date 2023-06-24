@@ -38,15 +38,15 @@ window.onload = function () {
 
     function startDrawing(event) {
         isDrawing = true;
-        rect.startX = event.clientX;
-        rect.startY = event.clientY ;
+        rect.startX = event.clientX - rectanglesContainer.offsetLeft;
+        rect.startY = event.clientY - rectanglesContainer.offsetTop;
     }
 
     function drawRectangle(event) {
         if (!isDrawing) return;
 
-        var x = event.clientX ;
-        var y = event.clientY ;
+        var x = event.clientX - rectanglesContainer.offsetLeft;
+        var y = event.clientY - rectanglesContainer.offsetTop;
 
         var width = x - rect.startX;
         var height = y - rect.startY;
@@ -57,8 +57,8 @@ window.onload = function () {
 
     function stopDrawing() {
         isDrawing = false;
-        var width = event.clientX - canvas.offsetLeft - rect.startX;
-        var height = event.clientY - canvas.offsetTop - rect.startY;
+        var width = event.clientX - rect.startX - rectanglesContainer.offsetLeft;
+        var height = event.clientY - rect.startY - rectanglesContainer.offsetTop;
         console.log(rect.startX, rect.startY, width, height)
         if (width < 0) {
             width = -width
@@ -95,31 +95,32 @@ window.onload = function () {
         rectDiv.className = rectangle.name;
         rectDiv.id = "rectangle"
         rectDiv.style.position = "absolute";
-        rectDiv.style.left = ((rectangle.startX + canvas.offsetLeft)/canvas.clientWidth *100) + "%";
-        rectDiv.style.top = ((rectangle.startY + canvas.offsetTop)/canvas.clientHeight *100) + "%";
-        rectDiv.style.width = ((rectangle.width / canvas.clientWidth)*100) + "%";
-        rectDiv.style.height = ((rectangle.height /canvas.clientHeight)*100) + "%";
+        rectDiv.style.left = ((rectangle.startX + canvas.offsetLeft) / canvas.clientWidth * 100) + "%";
+        rectDiv.style.top = ((rectangle.startY + canvas.offsetTop) / canvas.clientHeight * 100) + "%";
+        rectDiv.style.width = ((rectangle.width / canvas.clientWidth) * 100) + "%";
+        rectDiv.style.height = ((rectangle.height / canvas.clientHeight) * 100) + "%";
         rectDiv.style.backgroundColor = "red";
 
         var nameDiv = document.createElement("div");
         nameDiv.className = "rectangle-name";
-        nameDiv.style.textAlign = "center";
-        nameDiv.style.lineHeight = rectangle.height + "px";
         nameDiv.innerText = rectangle.name;
         var widthInput = document.createElement("input");
         widthInput.type = "number";
         widthInput.placeholder = "Width";
         widthInput.value = rectangle.width;
-        widthInput.style.width = 3 +"rem"
+        widthInput.style.width = 3 + "rem"
+        widthInput.addEventListener("input", update_size);
+
 
         var heightInput = document.createElement("input");
         heightInput.type = "number";
         heightInput.placeholder = "Height";
         heightInput.value = rectangle.height;
-        heightInput.style.width = 3 +"rem"
-        var validateBtn = document.createElement("button");
-        validateBtn.textContent = "Validate";
-        validateBtn.addEventListener("click", function () {
+        heightInput.style.width = 3 + "rem"
+        heightInput.addEventListener("input", update_size);
+
+        function update_size() {
+            console.log("change")
             var width = parseInt(widthInput.value);
             var height = parseInt(heightInput.value);
             if (width > canvas.clientWidth) {
@@ -132,15 +133,15 @@ window.onload = function () {
             if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
                 rectangle.width = width;
                 rectangle.height = height;
-                rectDiv.style.width = ((width / canvas.clientWidth)*100) + "%";
-                rectDiv.style.height = ((height /canvas.clientHeight)*100) + "%";
+                rectDiv.style.width = ((width / canvas.clientWidth) * 100) + "%";
+                rectDiv.style.height = ((height / canvas.clientHeight) * 100) + "%";
             }
 
             widthInput.value = rectangle.width;
             heightInput.value = rectangle.height;
             verify_placement(rectDiv.offsetLeft, rectDiv.offsetTop)
 
-        });
+        }
 
 
         var dropdownBtn = document.createElement("button");
@@ -205,7 +206,6 @@ window.onload = function () {
         rectDiv.appendChild(hideBtn);
         rectDiv.appendChild(widthInput);
         rectDiv.appendChild(heightInput);
-        rectDiv.appendChild(validateBtn)
         rectDiv.appendChild(dropdownBtn);
         rectDiv.appendChild(deleteBtn);
         rectDiv.appendChild(nameDiv);
@@ -221,6 +221,7 @@ window.onload = function () {
             isDragging = true
             offsetX = event.clientX - rectDiv.offsetLeft;
             offsetY = event.clientY - rectDiv.offsetTop;
+            console.log(offsetY, offsetX);
             rectDiv.addEventListener("mousemove", handleDrag);
             rectDiv.addEventListener("mouseup", stopDrag);
 
@@ -245,14 +246,15 @@ window.onload = function () {
                 y = minY;
             }
 
-            rectDiv.style.left = ((x/canvas.clientWidth)*100) + "%";
-            rectDiv.style.top = ((y/canvas.clientHeight)*100) + "%";
+            rectDiv.style.left = ((x / canvas.clientWidth) * 100) + "%";
+            rectDiv.style.top = ((y / canvas.clientHeight) * 100) + "%";
         }
 
         function handleDrag(event) {
             if (isDragging) {
-                var x = event.clientX + offsetX;
-                var y = event.clientY + offsetY;
+                var x = event.clientX - offsetX;
+                var y = event.clientY - offsetY;
+                console.log("mouve", x, y);
                 verify_placement(x, y)
             }
         }
@@ -286,25 +288,24 @@ window.onload = function () {
             var name = rectDiv.className;
             var dropdown = rectDiv.querySelector('.dropdown');
             var rectangle = {
-                startX: parseInt(rectDiv.style.left) - canvas.offsetLeft,
-                startY: parseInt(rectDiv.style.top) - canvas.offsetTop,
-                width: parseInt(rectDiv.style.width),
-                height: parseInt(rectDiv.style.height),
+                startX: parseFloat(rectDiv.style.left),
+                startY: parseFloat(rectDiv.style.top),
+                width: parseFloat(rectDiv.style.width),
+                height: parseFloat(rectDiv.style.height),
                 dropdownValue: dropdown.value
             };
 
             rectangles[name] = rectangle;
         }
-        rectangles["canvas_size"] = {"width": canvas.clientWidth, "height": canvas.clientHeight}
-
-        var jsonData = JSON.stringify([rectangles]);
+        var jsonData = JSON.stringify({rectangles: rectangles});
+        console.log(jsonData)
 
         fetch('/save_all', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({rectangles: rectangles}),
+            body: jsonData
         })
             .then(response => response.json())
             .then(data => {

@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from jinja_maker import save
 
 app = Flask(__name__)
 rectangles = {}
@@ -16,12 +17,26 @@ def save_all():
     # Process the rectangles data as needed
     # Save the rectangles in a dictionary or perform any other necessary actions
     print(rectangles)
+    save("/Users/theomathieu/Downloads", rectangles)
     return jsonify(success=True)
 
 @app.route('/get_dropdown_values')
 def get_dropdown_values():
-    values = ['Value 1', 'Value 2', 'Value 3']
-    return values
+    widget_list = [
+        "Frame",
+        "ScrollableFrame",
+        "Textbox",
+        "Button",
+        "Label",
+        "Entry",
+        "OptionMenu",
+        "SegmentedButton",
+        "Switch",
+        "CheckBox",
+        "RadioButton",
+        "Slider"
+    ]
+    return widget_list
 
 if __name__ == '__main__':
     app.run()
