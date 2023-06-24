@@ -110,11 +110,13 @@ window.onload = function () {
         widthInput.type = "number";
         widthInput.placeholder = "Width";
         widthInput.value = rectangle.width;
+        widthInput.style.width = 3 +"rem"
 
         var heightInput = document.createElement("input");
         heightInput.type = "number";
         heightInput.placeholder = "Height";
         heightInput.value = rectangle.height;
+        heightInput.style.width = 3 +"rem"
         var validateBtn = document.createElement("button");
         validateBtn.textContent = "Validate";
         validateBtn.addEventListener("click", function () {
@@ -167,10 +169,46 @@ window.onload = function () {
             dropdownBtn.appendChild(dropdown);
         }
 
+        function deleteRectangle(rectDiv) {
+            if (confirm("Are you sure you want to delete this rectangle?")) {
+                rectDiv.parentNode.removeChild(rectDiv);
+            }
+        }
+
+        var deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.addEventListener("click", function () {
+            deleteRectangle(rectDiv);
+        });
+        var hideBtn = document.createElement("button");
+        hideBtn.textContent = "Hide";
+        hideBtn.addEventListener("click", function () {
+            hideChildren(rectDiv, hideBtn);
+        });
+
+        function hideChildren(rectDiv, hideBtn) {
+            var children = rectDiv.children;
+            for (var i = 0; i < children.length; i++) {
+                var child = children[i];
+                if (child !== hideBtn) {
+                    if (child.style.display === "none") {
+                        child.style.display = "";
+                        hideBtn.textContent = "Hide";
+                    } else {
+                        child.style.display = "none";
+                        hideBtn.textContent = "Show";
+                    }
+                }
+            }
+        }
+
+
+        rectDiv.appendChild(hideBtn);
         rectDiv.appendChild(widthInput);
         rectDiv.appendChild(heightInput);
-        rectDiv.appendChild(dropdownBtn);
         rectDiv.appendChild(validateBtn)
+        rectDiv.appendChild(dropdownBtn);
+        rectDiv.appendChild(deleteBtn);
         rectDiv.appendChild(nameDiv);
 
         rectanglesContainer.appendChild(rectDiv);
@@ -250,7 +288,6 @@ window.onload = function () {
     function saveAllRectangles() {
         var rectangles = {};
         var rectangleDivs = document.querySelectorAll('[id="rectangle"]');
-        console.info(rectangleDivs)
 
         for (var i = 0; i < rectangleDivs.length; i++) {
             var rectDiv = rectangleDivs[i];
@@ -269,7 +306,6 @@ window.onload = function () {
         rectangles["canvas_size"] = {"width": canvas.clientWidth, "height": canvas.clientHeight}
 
         var jsonData = JSON.stringify([rectangles]);
-        console.log(jsonData);
 
         fetch('/save_all', {
             method: 'POST',

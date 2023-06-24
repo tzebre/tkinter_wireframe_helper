@@ -3,8 +3,8 @@
 #canvasContainer {
     background-color: antiquewhite;
     aspect-ratio: 16 / 9;
-    max-width: 100%;
-    max-height: calc(100vh - 20px); /* Subtract any desired margin or padding */
+    max-width: 80%;
+    max-height: 70%;
     margin: 0 auto;
     border: 1px solid #000;
 }
