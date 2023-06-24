@@ -91,55 +91,20 @@ window.onload = function () {
         rectDiv.className = rectangle.name;
         rectDiv.id = "rectangle"
         rectDiv.style.position = "absolute";
-        rectDiv.style.left = ((rectangle.startX + canvas.offsetLeft) / canvas.clientWidth * 100) + "%";
-        rectDiv.style.top = ((rectangle.startY + canvas.offsetTop) / canvas.clientHeight * 100) + "%";
+        rectDiv.style.left = (rectangle.startX / canvas.clientWidth * 100) + "%";
+        rectDiv.style.top = (rectangle.startY / canvas.clientHeight * 100) + "%";
         rectDiv.style.width = ((rectangle.width / canvas.clientWidth) * 100) + "%";
         rectDiv.style.height = ((rectangle.height / canvas.clientHeight) * 100) + "%";
         rectDiv.style.backgroundColor = "red";
 
         var nameDiv = document.createElement("div");
         nameDiv.className = "rectangle-name";
-        nameDiv.innerText = rectangle.name;
-        var widthInput = document.createElement("input");
-        widthInput.type = "number";
-        widthInput.placeholder = "Width";
-        widthInput.value = rectangle.width;
-        widthInput.style.width = 3 + "rem"
-        widthInput.addEventListener("input", update_size);
 
 
-        var heightInput = document.createElement("input");
-        heightInput.type = "number";
-        heightInput.placeholder = "Height";
-        heightInput.value = rectangle.height;
-        heightInput.style.width = 3 + "rem"
-        heightInput.addEventListener("input", update_size);
+        var dropdownBtn = document.getElementById("myDropdown")
+        console.info(rectDiv)
+        setup_custom(rectDiv)
 
-
-        var dropdownBtn = document.createElement("button");
-        dropdownBtn.className = "dropdown-button";
-        fetch('/get_dropdown_values')
-            .then(response => response.json())
-            .then(data => {
-                // Process the received data
-                populateDropdown(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-
-        function populateDropdown(values) {
-            var dropdown = document.createElement('select');
-            dropdown.className = 'dropdown';
-
-            values.forEach(value => {
-                var option = document.createElement('option');
-                option.textContent = value;
-                dropdown.appendChild(option);
-            });
-
-            dropdownBtn.appendChild(dropdown);
-        }
 
         function deleteRectangle(rectDiv) {
             if (confirm("Are you sure you want to delete this rectangle?")) {
@@ -147,63 +112,59 @@ window.onload = function () {
             }
         }
 
-        var deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "Delete";
+        var deleteBtn = document.getElementById("delete_rect");
         deleteBtn.addEventListener("click", function () {
             deleteRectangle(rectDiv);
         });
-        var hideBtn = document.createElement("button");
-        hideBtn.textContent = "Hide";
-        hideBtn.addEventListener("click", function () {
-            hideChildren(rectDiv, hideBtn);
+        var customBtn = document.createElement("button");
+        customBtn.textContent = "custom";
+        customBtn.addEventListener("click", function () {
+            activeCustom(rectDiv.className);
         });
-
-        function hideChildren(rectDiv, hideBtn) {
-            var children = rectDiv.children;
-            for (var i = 0; i < children.length; i++) {
-                var child = children[i];
-                if (child !== hideBtn) {
-                    if (child.style.display === "none") {
-                        child.style.display = "";
-                        hideBtn.textContent = "Hide";
-                    } else {
-                        child.style.display = "none";
-                        hideBtn.textContent = "Show";
-                    }
-                }
-            }
-        }
-
-
-        rectDiv.appendChild(hideBtn);
-        rectDiv.appendChild(widthInput);
-        rectDiv.appendChild(heightInput);
-        rectDiv.appendChild(dropdownBtn);
-        rectDiv.appendChild(deleteBtn);
-        rectDiv.appendChild(nameDiv);
-
+        rectDiv.appendChild(customBtn);
 
         // Update div rectangle size
-        function update_size() {
-            var width = parseInt(widthInput.value);
-            var height = parseInt(heightInput.value);
-            if (width > canvas.clientWidth) {
-                width = canvas.clientWidth;
-            }
-            if (height > canvas.clientHeight) {
-                height = canvas.clientHeight;
-            }
 
-            if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
-                rectangle.width = width;
-                rectangle.height = height;
-                rectDiv.style.width = ((width / canvas.clientWidth) * 100) + "%";
-                rectDiv.style.height = ((height / canvas.clientHeight) * 100) + "%";
-            }
 
-            widthInput.value = rectangle.width;
-            heightInput.value = rectangle.height;
-            verify_placement(rectDiv.offsetLeft, rectDiv.offsetTop)
+        function activeCustom(class_name) {
+            var actual_rect = document.getElementsByClassName(class_name)
+            console.info(actual_rect)
+            setup_custom(actual_rect)
+        }
+
+        function setup_custom(element) {
+            console.info(element)
+            var widthInput = document.getElementById("width")
+            var heightInput = document.getElementById("height")
+            var select_labl = document.getElementById("selected_rect")
+            select_labl.textContent = "Select: " + element.className
+            widthInput.value = parseInt(parseFloat(element.style.width)* canvas.clientWidth / 100)
+            heightInput.value = parseInt(parseFloat(element.style.height) * canvas.clientHeight / 100)
+            widthInput.addEventListener("input", update_size);
+            heightInput.addEventListener("input", update_size);
+
+            function update_size() {
+                var width = parseInt(widthInput.value);
+                var height = parseInt(heightInput.value);
+                if (width > canvas.clientWidth) {
+                    width = canvas.clientWidth;
+                }
+                if (height > canvas.clientHeight) {
+                    height = canvas.clientHeight;
+                }
+
+                if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
+                    rectangle.width = width;
+                    rectangle.height = height;
+                    rectDiv.style.width = ((width / canvas.clientWidth) * 100) + "%";
+                    rectDiv.style.height = ((height / canvas.clientHeight) * 100) + "%";
+                }
+
+                widthInput.value = rectangle.width;
+                heightInput.value = rectangle.height;
+                verify_placement(rectDiv.offsetLeft, rectDiv.offsetTop)
+
+            }
 
         }
 
