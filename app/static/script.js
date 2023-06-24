@@ -120,6 +120,12 @@ window.onload = function () {
         validateBtn.addEventListener("click", function () {
             var width = parseInt(widthInput.value);
             var height = parseInt(heightInput.value);
+            if (width > canvas.clientWidth) {
+                width = canvas.clientWidth;
+            }
+            if (height > canvas.clientHeight) {
+                height = canvas.clientHeight;
+            }
 
             if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
                 rectangle.width = width;
@@ -130,6 +136,9 @@ window.onload = function () {
 
             widthInput.value = rectangle.width;
             heightInput.value = rectangle.height;
+            console.log("before", rectDiv.offsetTop, rectDiv.offsetLeft)
+            verify_placement(rectDiv.offsetLeft, rectDiv.offsetTop)
+
         });
 
 
@@ -159,33 +168,34 @@ window.onload = function () {
 
         }
 
+        function verify_placement(x, y) {
+            var minX = canvas.offsetLeft;
+            var minY = canvas.offsetTop;
+            var maxX = canvas.offsetLeft + canvas.offsetWidth - rectDiv.offsetWidth;
+            var maxY = canvas.offsetTop + canvas.offsetHeight - rectDiv.offsetHeight;
+
+            // Check if the new coordinates exceed the canvas boundaries
+            if (x > maxX) {
+                x = maxX;
+            } else if (x < minX) {
+                x = minX
+            }
+
+            if (y > maxY) {
+                y = maxY;
+            } else if (y < minY) {
+                y = minY;
+            }
+            console.log(x, y)
+            rectDiv.style.left = x + "px";
+            rectDiv.style.top = y + "px";
+        }
+
         function handleDrag(event) {
             if (isDragging) {
                 var x = event.clientX - offsetX;
                 var y = event.clientY - offsetY;
-
-                // Calculate the maximum allowed coordinates
-                var minX = canvas.offsetLeft;
-                var minY = canvas.offsetTop;
-                var maxX = canvas.offsetLeft + canvas.offsetWidth - rectDiv.offsetWidth;
-                var maxY = canvas.offsetTop + canvas.offsetHeight - rectDiv.offsetHeight;
-                console.log(minX, maxX, minY, maxY)
-
-                // Check if the new coordinates exceed the canvas boundaries
-                if (x > maxX) {
-                    x = maxX;
-                } else if (x < minX) {
-                    x = minX
-                }
-
-                if (y > maxY) {
-                    y = maxY;
-                } else if (y < minY) {
-                    y = minY;
-                }
-                console.log(x, y)
-                rectDiv.style.left = x + "px";
-                rectDiv.style.top = y + "px";
+                verify_placement(x, y)
             }
         }
 
@@ -224,15 +234,15 @@ window.onload = function () {
             var rectDiv = rectangleDivs[i];
             var name = rectDiv.className;
             var rectangle = {
-                startX: parseInt(rectDiv.style.left),
-                startY: parseInt(rectDiv.style.top),
+                startX: parseInt(rectDiv.style.left) - canvas.offsetLeft,
+                startY: parseInt(rectDiv.style.top) - canvas.offsetTop,
                 width: parseInt(rectDiv.style.width),
                 height: parseInt(rectDiv.style.height)
             };
 
             rectangles[name] = rectangle;
-            console.log(name)
         }
+        rectangles["canvas_size"] = {"width": canvas.clientWidth, "height": canvas.clientHeight}
 
         var jsonData = JSON.stringify([rectangles]);
         console.log(jsonData);
