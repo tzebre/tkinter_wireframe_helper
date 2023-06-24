@@ -144,7 +144,29 @@ window.onload = function () {
 
         var dropdownBtn = document.createElement("button");
         dropdownBtn.className = "dropdown-button";
-        dropdownBtn.textContent = "Options";
+        fetch('/get_dropdown_values')
+            .then(response => response.json())
+            .then(data => {
+                // Process the received data
+                populateDropdown(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+        function populateDropdown(values) {
+            var dropdown = document.createElement('select');
+            dropdown.className = 'dropdown';
+
+            values.forEach(value => {
+                var option = document.createElement('option');
+                option.textContent = value;
+                dropdown.appendChild(option);
+            });
+
+            dropdownBtn.appendChild(dropdown);
+        }
+
         rectDiv.appendChild(widthInput);
         rectDiv.appendChild(heightInput);
         rectDiv.appendChild(dropdownBtn);
@@ -233,11 +255,13 @@ window.onload = function () {
         for (var i = 0; i < rectangleDivs.length; i++) {
             var rectDiv = rectangleDivs[i];
             var name = rectDiv.className;
+            var dropdown = rectDiv.querySelector('.dropdown');
             var rectangle = {
                 startX: parseInt(rectDiv.style.left) - canvas.offsetLeft,
                 startY: parseInt(rectDiv.style.top) - canvas.offsetTop,
                 width: parseInt(rectDiv.style.width),
-                height: parseInt(rectDiv.style.height)
+                height: parseInt(rectDiv.style.height),
+                dropdownValue: dropdown.value
             };
 
             rectangles[name] = rectangle;

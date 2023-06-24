@@ -18,6 +18,10 @@ def save_all():
     print(rectangles)
     return jsonify(success=True)
 
+@app.route('/get_dropdown_values')
+def get_dropdown_values():
+    values = ['Value 1', 'Value 2', 'Value 3']
+    return values
 
 if __name__ == '__main__':
     app.run()
