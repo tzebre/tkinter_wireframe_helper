@@ -1,12 +1,13 @@
 
 
-#canvasContainer {
+.canvasContainer {
     background-color: antiquewhite;
     aspect-ratio: 16 / 9;
     max-width: 80%;
     max-height: 70%;
     margin: 0 auto;
     border: 1px solid #000;
+    position: relative;
 }
 
 canvas {

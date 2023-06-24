@@ -95,10 +95,10 @@ window.onload = function () {
         rectDiv.className = rectangle.name;
         rectDiv.id = "rectangle"
         rectDiv.style.position = "absolute";
-        rectDiv.style.left = (rectangle.startX + canvas.offsetLeft) + "px";
-        rectDiv.style.top = (rectangle.startY + canvas.offsetTop) + "px";
-        rectDiv.style.width = rectangle.width + "px";
-        rectDiv.style.height = rectangle.height + "px";
+        rectDiv.style.left = ((rectangle.startX + canvas.offsetLeft)/canvas.clientWidth *100) + "%";
+        rectDiv.style.top = ((rectangle.startY + canvas.offsetTop)/canvas.clientHeight *100) + "%";
+        rectDiv.style.width = ((rectangle.width / canvas.clientWidth)*100) + "%";
+        rectDiv.style.height = ((rectangle.height /canvas.clientHeight)*100) + "%";
         rectDiv.style.backgroundColor = "red";
 
         var nameDiv = document.createElement("div");
@@ -132,13 +132,12 @@ window.onload = function () {
             if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
                 rectangle.width = width;
                 rectangle.height = height;
-                rectDiv.style.width = width + "px";
-                rectDiv.style.height = height + "px";
+                rectDiv.style.width = ((width / canvas.clientWidth)*100) + "%";
+                rectDiv.style.height = ((height /canvas.clientHeight)*100) + "%";
             }
 
             widthInput.value = rectangle.width;
             heightInput.value = rectangle.height;
-            console.log("before", rectDiv.offsetTop, rectDiv.offsetLeft)
             verify_placement(rectDiv.offsetLeft, rectDiv.offsetTop)
 
         });
@@ -246,9 +245,10 @@ window.onload = function () {
             } else if (y < minY) {
                 y = minY;
             }
-            console.log(x, y)
-            rectDiv.style.left = x + "px";
-            rectDiv.style.top = y + "px";
+
+            rectDiv.style.left = ((x/canvas.clientWidth)*100) + "%";
+            rectDiv.style.top = ((y/canvas.clientHeight)*100) + "%";
+            console.log(rectDiv.style.left, rectDiv.style.top)
         }
 
         function handleDrag(event) {
@@ -261,6 +261,7 @@ window.onload = function () {
 
 
         function saveRectanglePosition(name, left, top) {
+            console.log(left,top)
 
             rectDiv.style.left = left
             rectDiv.style.top = top
@@ -271,12 +272,7 @@ window.onload = function () {
             isDragging = false;
             rectDiv.addEventListener("mousemove", handleDrag);
             rectDiv.addEventListener("mouseup", stopDrag);
-            // Update the position values in the rectangle object
-            rectDiv.style.left = (parseFloat(rectDiv.style.left)) + "px";
-            rectDiv.style.top = (parseFloat(rectDiv.style.top)) + "px";
 
-
-            // Save the updated rectangle position if needed
             saveRectanglePosition(rectDiv.name, rectDiv.style.left, rectDiv.style.top);
 
         }
