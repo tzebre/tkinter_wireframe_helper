@@ -1,12 +1,19 @@
 window.onload = function () {
-    var rectanglesContainer = document.getElementById("canvasContainer");
+    var canvasContainer = document.getElementById("canvasContainer");
     var canvas = document.getElementById("canvas");
     var context = canvas.getContext("2d");
     var aspectRatio = 16 / 9;
+    var isDrawing = false;
+    var rect = {};
+
+    canvas.addEventListener("mousedown", startDrawing);
+    canvas.addEventListener("mousemove", drawRectangle);
+    canvas.addEventListener("mouseup", stopDrawing);
 
     function resizeCanvas() {
-        var containerWidth = rectanglesContainer.offsetWidth;
-        var containerHeight = rectanglesContainer.offsetHeight;
+        console.log("resizing")
+        var containerWidth = canvasContainer.offsetWidth;
+        var containerHeight = canvasContainer.offsetHeight;
 
         if (containerWidth / containerHeight > aspectRatio) {
             var canvasWidth = containerHeight * aspectRatio;
@@ -15,7 +22,6 @@ window.onload = function () {
             var canvasWidth = containerWidth;
             var canvasHeight = containerWidth / aspectRatio;
         }
-
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
 
@@ -29,24 +35,18 @@ window.onload = function () {
     window.addEventListener("resize", resizeCanvas);
     resizeCanvas();
 
-    var isDrawing = false;
-    var rect = {};
-
-    canvas.addEventListener("mousedown", startDrawing);
-    canvas.addEventListener("mousemove", drawRectangle);
-    canvas.addEventListener("mouseup", stopDrawing);
-
+    // Rectangles draw
     function startDrawing(event) {
         isDrawing = true;
-        rect.startX = event.clientX - rectanglesContainer.offsetLeft;
-        rect.startY = event.clientY - rectanglesContainer.offsetTop;
+        rect.startX = event.clientX - canvasContainer.offsetLeft;
+        rect.startY = event.clientY - canvasContainer.offsetTop;
     }
 
     function drawRectangle(event) {
         if (!isDrawing) return;
 
-        var x = event.clientX - rectanglesContainer.offsetLeft;
-        var y = event.clientY - rectanglesContainer.offsetTop;
+        var x = event.clientX - canvasContainer.offsetLeft;
+        var y = event.clientY - canvasContainer.offsetTop;
 
         var width = x - rect.startX;
         var height = y - rect.startY;
@@ -57,9 +57,8 @@ window.onload = function () {
 
     function stopDrawing() {
         isDrawing = false;
-        var width = event.clientX - rect.startX - rectanglesContainer.offsetLeft;
-        var height = event.clientY - rect.startY - rectanglesContainer.offsetTop;
-        console.log(rect.startX, rect.startY, width, height)
+        var width = event.clientX - rect.startX - canvasContainer.offsetLeft;
+        var height = event.clientY - rect.startY - canvasContainer.offsetTop;
         if (width < 0) {
             width = -width
             rect.startX = rect.startX - width
@@ -68,12 +67,10 @@ window.onload = function () {
             height = -height
             rect.startY = rect.startY - height
         }
-        console.log(rect.startX, rect.startY, width, height);
-
-
         openPopup(rect.startX, rect.startY, width, height);
     }
 
+    // Save rectangle into div
     function openPopup(startX, startY, width, height) {
         var name = prompt("Enter a name for the rectangle:");
         if (name) {
@@ -88,7 +85,6 @@ window.onload = function () {
             createRectangleDiv(rectangle);
         }
     }
-
 
     function createRectangleDiv(rectangle) {
         var rectDiv = document.createElement("div");
@@ -118,30 +114,6 @@ window.onload = function () {
         heightInput.value = rectangle.height;
         heightInput.style.width = 3 + "rem"
         heightInput.addEventListener("input", update_size);
-
-        function update_size() {
-            console.log("change")
-            var width = parseInt(widthInput.value);
-            var height = parseInt(heightInput.value);
-            if (width > canvas.clientWidth) {
-                width = canvas.clientWidth;
-            }
-            if (height > canvas.clientHeight) {
-                height = canvas.clientHeight;
-            }
-
-            if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
-                rectangle.width = width;
-                rectangle.height = height;
-                rectDiv.style.width = ((width / canvas.clientWidth) * 100) + "%";
-                rectDiv.style.height = ((height / canvas.clientHeight) * 100) + "%";
-            }
-
-            widthInput.value = rectangle.width;
-            heightInput.value = rectangle.height;
-            verify_placement(rectDiv.offsetLeft, rectDiv.offsetTop)
-
-        }
 
 
         var dropdownBtn = document.createElement("button");
@@ -210,9 +182,35 @@ window.onload = function () {
         rectDiv.appendChild(deleteBtn);
         rectDiv.appendChild(nameDiv);
 
-        rectanglesContainer.appendChild(rectDiv);
-        rectDiv.addEventListener("mousedown", startDrag);
 
+        // Update div rectangle size
+        function update_size() {
+            var width = parseInt(widthInput.value);
+            var height = parseInt(heightInput.value);
+            if (width > canvas.clientWidth) {
+                width = canvas.clientWidth;
+            }
+            if (height > canvas.clientHeight) {
+                height = canvas.clientHeight;
+            }
+
+            if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
+                rectangle.width = width;
+                rectangle.height = height;
+                rectDiv.style.width = ((width / canvas.clientWidth) * 100) + "%";
+                rectDiv.style.height = ((height / canvas.clientHeight) * 100) + "%";
+            }
+
+            widthInput.value = rectangle.width;
+            heightInput.value = rectangle.height;
+            verify_placement(rectDiv.offsetLeft, rectDiv.offsetTop)
+
+        }
+
+        canvasContainer.appendChild(rectDiv);
+
+        // Move div rectangle
+        rectDiv.addEventListener("mousedown", startDrag);
         var offsetX, offsetY;
         var isDragging = false;
 
@@ -220,9 +218,16 @@ window.onload = function () {
             isDragging = true
             offsetX = event.clientX - rectDiv.offsetLeft;
             offsetY = event.clientY - rectDiv.offsetTop;
-            console.log(offsetY, offsetX);
             rectDiv.addEventListener("mousemove", handleDrag);
             rectDiv.addEventListener("mouseup", stopDrag);
+        }
+
+        function handleDrag(event) {
+            if (isDragging) {
+                var x = event.clientX - offsetX;
+                var y = event.clientY - offsetY;
+                verify_placement(x, y)
+            }
         }
 
         function verify_placement(x, y) {
@@ -248,21 +253,6 @@ window.onload = function () {
             rectDiv.style.top = ((y / canvas.clientHeight) * 100) + "%";
         }
 
-        function handleDrag(event) {
-            if (isDragging) {
-                var x = event.clientX - offsetX;
-                var y = event.clientY - offsetY;
-                console.log("mouve", x, y);
-                verify_placement(x, y)
-            }
-        }
-
-
-        function saveRectanglePosition(name, left, top) {
-            rectDiv.style.left = left
-            rectDiv.style.top = top
-        }
-
 
         function stopDrag() {
             isDragging = false;
@@ -272,48 +262,50 @@ window.onload = function () {
             saveRectanglePosition(rectDiv.name, rectDiv.style.left, rectDiv.style.top);
 
         }
-    }
 
-    var saveAllBtn = document.getElementById("saveAllBtn");
-    saveAllBtn.addEventListener("click", saveAllRectangles);
-
-    function saveAllRectangles() {
-        var rectangles = {};
-        var rectangleDivs = document.querySelectorAll('[id="rectangle"]');
-
-        for (var i = 0; i < rectangleDivs.length; i++) {
-            var rectDiv = rectangleDivs[i];
-            var name = rectDiv.className;
-            var dropdown = rectDiv.querySelector('.dropdown');
-            var rectangle = {
-                startX: parseFloat(rectDiv.style.left),
-                startY: parseFloat(rectDiv.style.top),
-                width: parseFloat(rectDiv.style.width),
-                height: parseFloat(rectDiv.style.height),
-                dropdownValue: dropdown.value
-            };
-
-            rectangles[name] = rectangle;
+        function saveRectanglePosition(name, left, top) {
+            rectDiv.style.left = left
+            rectDiv.style.top = top
         }
-        var jsonData = JSON.stringify({rectangles: rectangles});
-        console.log(jsonData)
 
-        fetch('/save_all', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: jsonData
-        })
-            .then(response => response.json())
-            .then(data => {
-                // Handle the response or perform any necessary actions
-                console.log('Save all response:', data);
+        // Save results
+        var saveAllBtn = document.getElementById("saveAllBtn");
+        saveAllBtn.addEventListener("click", saveAllRectangles);
+
+        function saveAllRectangles() {
+            var rectangles = {};
+            var rectangleDivs = document.querySelectorAll('[id="rectangle"]');
+
+            for (var i = 0; i < rectangleDivs.length; i++) {
+                var rectDiv = rectangleDivs[i];
+                var name = rectDiv.className;
+                var dropdown = rectDiv.querySelector('.dropdown');
+                rectangles[name] = {
+                    startX: parseFloat(rectDiv.style.left),
+                    startY: parseFloat(rectDiv.style.top),
+                    width: parseFloat(rectDiv.style.width),
+                    height: parseFloat(rectDiv.style.height),
+                    dropdownValue: dropdown.value
+                };
+            }
+            var jsonData = JSON.stringify({rectangles: rectangles});
+
+            fetch('/save_all', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: jsonData
             })
-            .catch(error => {
-                // Handle any errors that occurred during the request
-                console.error('Error saving all rectangles:', error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response or perform any necessary actions
+                    console.log('Save all response:', data);
+                })
+                .catch(error => {
+                    // Handle any errors that occurred during the request
+                    console.error('Error saving all rectangles:', error);
+                });
+        }
     }
 }
-;

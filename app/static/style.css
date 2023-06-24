@@ -1,22 +1,35 @@
+body {
+    background-color: dimgray;
+}
 
-.canva_spec{
-    display: flex;
-}
-.widget_spec{
-    flex-grow:1;
-    background-color: bisque;
-    border-radius: 10px;
-    padding: 20px;
-}
 .canvasContainer {
-    border-radius: 10px;
+    position: relative;
     background-color: antiquewhite;
     aspect-ratio: 16 / 9;
     width: 75%;
     max-height: 70%;
     margin-right: 1.5%;
     border: 2px solid #000;
-    position: relative;
+    border-radius: 10px;
+}
+
+.canva_spec {
+    display: flex;
+}
+
+.widget_spec {
+    flex-grow: 1;
+    background-color: bisque;
+    border-radius: 10px;
+    padding: 20px;
+}
+.input_width{
+    width: 4rem;
+}
+.custom_widget {
+    background-color: darkgrey;
+    border-radius: 10px;
+    padding: 8px;
 }
 
 canvas {
@@ -35,8 +48,6 @@ canvas {
     pointer-events: auto;
 }
 
-body {
-    background-color: dimgray;
-}
+
 
 

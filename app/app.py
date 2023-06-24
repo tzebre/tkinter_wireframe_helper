@@ -7,18 +7,32 @@ rectangles = {}
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    widget_list = [
+        "Frame",
+        "ScrollableFrame",
+        "Textbox",
+        "Button",
+        "Label",
+        "Entry",
+        "OptionMenu",
+        "SegmentedButton",
+        "Switch",
+        "CheckBox",
+        "RadioButton",
+        "Slider"
+    ]
+    return render_template('index.html', drop_values = widget_list)
 
 
 @app.route('/save_all', methods=['POST'])
 def save_all():
     data = request.json  # Assuming the data sent is in JSON format
-    rectangles = data['rectangles']  # Assuming the rectangles are stored in a 'rectangles' key
+    widget_dict = data['rectangles']  # Assuming the rectangles are stored in a 'rectangles' key
     # Process the rectangles data as needed
     # Save the rectangles in a dictionary or perform any other necessary actions
-    print(rectangles)
-    save("/Users/theomathieu/Downloads", rectangles)
+    save("/Users/theomathieu/Downloads", widget_dict)
     return jsonify(success=True)
+
 
 @app.route('/get_dropdown_values')
 def get_dropdown_values():
@@ -37,6 +51,7 @@ def get_dropdown_values():
         "Slider"
     ]
     return widget_list
+
 
 if __name__ == '__main__':
     app.run()
