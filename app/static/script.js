@@ -38,15 +38,15 @@ window.onload = function () {
 
     function startDrawing(event) {
         isDrawing = true;
-        rect.startX = event.clientX - canvas.offsetLeft;
-        rect.startY = event.clientY - canvas.offsetTop;
+        rect.startX = event.clientX;
+        rect.startY = event.clientY ;
     }
 
     function drawRectangle(event) {
         if (!isDrawing) return;
 
-        var x = event.clientX - canvas.offsetLeft;
-        var y = event.clientY - canvas.offsetTop;
+        var x = event.clientX ;
+        var y = event.clientY ;
 
         var width = x - rect.startX;
         var height = y - rect.startY;
@@ -221,7 +221,6 @@ window.onload = function () {
             isDragging = true
             offsetX = event.clientX - rectDiv.offsetLeft;
             offsetY = event.clientY - rectDiv.offsetTop;
-            console.log("start", offsetX, offsetY, event.clientX, event.clientY)
             rectDiv.addEventListener("mousemove", handleDrag);
             rectDiv.addEventListener("mouseup", stopDrag);
 
@@ -248,21 +247,18 @@ window.onload = function () {
 
             rectDiv.style.left = ((x/canvas.clientWidth)*100) + "%";
             rectDiv.style.top = ((y/canvas.clientHeight)*100) + "%";
-            console.log(rectDiv.style.left, rectDiv.style.top)
         }
 
         function handleDrag(event) {
             if (isDragging) {
-                var x = event.clientX - offsetX;
-                var y = event.clientY - offsetY;
+                var x = event.clientX + offsetX;
+                var y = event.clientY + offsetY;
                 verify_placement(x, y)
             }
         }
 
 
         function saveRectanglePosition(name, left, top) {
-            console.log(left,top)
-
             rectDiv.style.left = left
             rectDiv.style.top = top
         }
