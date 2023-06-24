@@ -89,10 +89,10 @@ class Application(ctk.CTk):
     def create_place_element(self):
         for elem_widget in self.element:
             current = self.element[elem_widget]
-            type = current.get("dropdownValue")
+            type = current.get("widget")
             widget = create_widget(type, self)
             self.placed[elem_widget] = widget
-            self.place_widget(widget, current.get('startX'), current.get("startY"), current.get("width"), 
+            self.place_widget(widget, current.get('left'), current.get("top"), current.get("width"), 
                 current.get("height"))
             
 
@@ -115,11 +115,10 @@ def save(dest, dict_el):
 
 
 if __name__ == '__main__':
-    test_dict = {
-        'Test': {'startX': 24.0517, 'startY': 18.3644, 'width': 24.0517, 'height': 24.5337, 'dropdownValue': 'Label'},
-        'rien': {'startX': 55.0444, 'startY': 34.2898, 'width': 17.9984, 'height': 21.8077, 'dropdownValue': 'Textbox'},
-        'Bonjour': {'startX': 32.6069, 'startY': 69.5839, 'width': 14.8507, 'height': 18.6514,
-                    'dropdownValue': 'Label'},
-        'non': {'startX': 44.3099, 'startY': 36.2984, 'width': 12.5908, 'height': 17.5036, 'dropdownValue': 'Label'}}
-    canva_dict = {'canvas_size': {'width': 1239, 'height': 697}}
+    test_dict = {'A': {'type': 'RadioButton', 'width': 32.3054, 'height': 28.9817, 'top': 31.3316, 'left': 39.5007,
+                       'widget': 'RadioButton'},
+                 'B': {'type': 'Button', 'width': 31.5712, 'height': 4.17755, 'top': 83.2898, 'left': 34.8018,
+                       'widget': 'Button'},
+                 'C': {'type': 'ScrollableFrame', 'width': 18.5022, 'height': 13.8381, 'top': 28.9817, 'left': 7.48899,
+                       'widget': 'ScrollableFrame'}}
     save("/Users/theomathieu/Downloads", test_dict)

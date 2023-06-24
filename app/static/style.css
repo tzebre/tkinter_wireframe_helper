@@ -34,6 +34,7 @@ body {
 
 .name_delete {
     display: flex;
+    justify-content: space-between;
 }
 
 .name_delete  {
@@ -56,6 +57,10 @@ canvas {
     position: absolute;
     border: 1px solid red;
     pointer-events: auto;
+}
+
+#delete_rect {
+    /*align-items: end;*/
 }
 
 

@@ -155,7 +155,7 @@ window.onload = function () {
                 "height": parseFloat(actual_rect.style.height),
                 "top": parseFloat(actual_rect.style.top),
                 "left": parseFloat(actual_rect.style.left),
-                "widget": console.log(document.getElementById("myDropdown").value)
+                "widget": document.getElementById("myDropdown").value
             }
 
         console.log(all_rect)
@@ -263,23 +263,8 @@ window.onload = function () {
     saveAllBtn.addEventListener("click", saveAllRectangles);
 
     function saveAllRectangles() {
-        var rectangles = {};
-        var rectangleDivs = document.querySelectorAll('[class="rectangle"]');
-        console.log(rectangleDivs)
-
-        for (var i = 0; i < rectangleDivs.length; i++) {
-            var rectDiv = rectangleDivs[i];
-            var name = rectDiv.className;
-            var dropdown = rectDiv.querySelector('.dropdown');
-            rectangles[name] = {
-                startX: parseFloat(rectDiv.style.left),
-                startY: parseFloat(rectDiv.style.top),
-                width: parseFloat(rectDiv.style.width),
-                height: parseFloat(rectDiv.style.height),
-                dropdownValue: dropdown.value
-            };
-        }
-        var jsonData = JSON.stringify({rectangles: rectangles});
+        var jsonData = JSON.stringify(all_rect);
+        console.log(jsonData)
 
         fetch('/save_all', {
             method: 'POST',

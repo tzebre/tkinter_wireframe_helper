@@ -27,10 +27,10 @@ def index():
 @app.route('/save_all', methods=['POST'])
 def save_all():
     data = request.json  # Assuming the data sent is in JSON format
-    widget_dict = data['rectangles']  # Assuming the rectangles are stored in a 'rectangles' key
+    print(data)  # Assuming the rectangles are stored in a 'rectangles' key
     # Process the rectangles data as needed
     # Save the rectangles in a dictionary or perform any other necessary actions
-    save("/Users/theomathieu/Downloads", widget_dict)
+    save("/Users/theomathieu/Downloads", data)
     return jsonify(success=True)
 
 
