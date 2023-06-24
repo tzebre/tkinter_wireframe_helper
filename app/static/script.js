@@ -153,8 +153,8 @@ window.onload = function () {
                 "type": document.getElementById("myDropdown").value,
                 "width": parseFloat(actual_rect.style.width),
                 "height": parseFloat(actual_rect.style.height),
-                "top": parseFloat(actual_rect.style.top),
-                "left": parseFloat(actual_rect.style.left),
+                "y": parseFloat(actual_rect.style.top),
+                "x": parseFloat(actual_rect.style.left),
                 "widget": document.getElementById("myDropdown").value
             }
 

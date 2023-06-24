@@ -73,8 +73,7 @@ class Application(ctk.CTk):
             
         return desired_width, desired_height, x, y
         
-    def place_widget(self, widget, x, y, width, height):
-
+    def place_widget(self, widget, x, y, width, height, **kwargs):
         # Calculate the pixel positions based on percentages
         pixel_x = int(self.desired_W * (x / 100))
         pixel_y = int(self.desired_H * (y / 100))
@@ -82,22 +81,27 @@ class Application(ctk.CTk):
         pixel_height = int(self.desired_H * (height / 100))
 
         # Place the widget using the calculated pixel positions
-        widget.configure(width=pixel_width, height=pixel_height, fg_color="red")
+        widget.configure(width=pixel_width, height=pixel_height)
+        
         widget.place(x=pixel_x, y=pixel_y)
 
     #create and place widget
     def create_widget(self):
     {% for element_name in element_dict %}
         # element : {{element_name}}
-        current = self.element_dict['{{element_name}}']
-        type = current.get("widget")
+        current = self.element_dict['{{element_name}}'] 
+        type = '{{element_dict[element_name]["type"]}}'
         widget = create_widget(type, self)
         self.placed['{{element_name}}'] = widget
-        self.place_widget(widget, current.get('left'), current.get("top"), current.get("width"),current.get("height"))    
+        self.place_widget(widget, 
+        {%- for arg_name in element_dict[element_name] -%}
+            {%- if arg_name != "type" and arg_name != "widget" -%}
+                {{arg_name}} = {{element_dict[element_name][arg_name]}},
+            {%- endif -%}
+        {%- endfor -%}
+        )    
     {% endfor %}
 
-            
-            
 
 app = Application()
 app.mainloop()
@@ -118,10 +122,9 @@ def save(dest, dict_el):
 
 
 if __name__ == '__main__':
-    test_dict = {'A': {'type': 'RadioButton', 'width': 32.3054, 'height': 28.9817, 'top': 31.3316, 'left': 39.5007,
-                       'widget': 'RadioButton'},
-                 'B': {'type': 'Button', 'width': 31.5712, 'height': 4.17755, 'top': 83.2898, 'left': 34.8018,
-                       'widget': 'Button'},
-                 'C': {'type': 'ScrollableFrame', 'width': 18.5022, 'height': 13.8381, 'top': 28.9817, 'left': 7.48899,
-                       'widget': 'ScrollableFrame'}}
+    test_dict = {
+        'A': {'type': 'Entry', 'width': 20.8517, 'height': 23.4987, 'y': 18.0157, 'x': 33.627, 'widget': 'Entry'},
+        'B': {'type': 'Slider', 'width': 23.4949, 'height': 20.1044, 'y': 57.1802, 'x': 51.6887, 'widget': 'Slider'},
+        'C': {'type': 'Slider', 'width': 18.649, 'height': 8.87728, 'y': 26.3708, 'x': 74.8899, 'widget': 'Slider'}}
+
     save("/Users/theomathieu/Downloads", test_dict)
