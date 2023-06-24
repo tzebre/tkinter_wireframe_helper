@@ -64,8 +64,8 @@ window.onload = function () {
             width = -width
             rect.startX = rect.startX - width
         }
-        if (height < 0){
-            height = - height
+        if (height < 0) {
+            height = -height
             rect.startY = rect.startY - height
         }
         console.log(rect.startX, rect.startY, width, height);
@@ -102,32 +102,100 @@ window.onload = function () {
             }
         };
         xhr.send(JSON.stringify(rectangle));
+        context.clearRect(0, 0, canvas.width, canvas.height);
     }
 
     function createRectangleDiv(rectangle) {
         var rectDiv = document.createElement("div");
-        rectDiv.className = "rectangle";
+        rectDiv.className = rectangle.name;
         rectDiv.style.position = "absolute";
         rectDiv.style.left = (rectangle.startX + canvas.offsetLeft) + "px";
         rectDiv.style.top = (rectangle.startY + canvas.offsetTop) + "px";
         rectDiv.style.width = rectangle.width + "px";
         rectDiv.style.height = rectangle.height + "px";
         rectDiv.style.backgroundColor = "red";
+
         var nameDiv = document.createElement("div");
         nameDiv.className = "rectangle-name";
         nameDiv.style.textAlign = "center";
         nameDiv.style.lineHeight = rectangle.height + "px";
         nameDiv.innerText = rectangle.name;
-        var choicesButton = document.createElement("button");
-        choicesButton.innerText = "Select an option";
-        choicesButton.addEventListener("click", function () {
-            showChoices(rectangle.name);
-        });
-        rectDiv.appendChild(choicesButton);
+        var dropdownBtn = document.createElement("button");
+        dropdownBtn.className = "dropdown-button";
+        dropdownBtn.textContent = "Options";
+        rectDiv.appendChild(dropdownBtn);
         rectDiv.appendChild(nameDiv);
-        rectanglesContainer.appendChild(rectDiv);
 
+        rectanglesContainer.appendChild(rectDiv);
+        rectDiv.addEventListener("mousedown", startDrag);
+
+
+        var offsetX, offsetY;
+        var isDragging = false;
+
+        function startDrag(event) {
+            isDragging = true
+            offsetX = event.clientX - rectDiv.offsetLeft;
+            offsetY = event.clientY - rectDiv.offsetTop;
+            console.log("start", offsetX, offsetY, event.clientX, event.clientY)
+            rectDiv.addEventListener("mousemove", handleDrag);
+            rectDiv.addEventListener("mouseup", stopDrag);
+
+        }
+
+        function handleDrag(event) {
+            if (isDragging) {
+                var x = event.clientX - offsetX;
+                var y = event.clientY - offsetY;
+
+                // Calculate the maximum allowed coordinates
+                var minX = canvas.offsetLeft;
+                var minY = canvas.offsetTop;
+                var maxX = canvas.offsetLeft + canvas.offsetWidth - rectDiv.offsetWidth;
+                var maxY = canvas.offsetTop + canvas.offsetHeight - rectDiv.offsetHeight;
+                console.log(minX, maxX, minY, maxY)
+
+                // Check if the new coordinates exceed the canvas boundaries
+                if (x > maxX) {
+                    x = maxX;
+                } else if (x < minX) {
+                    x = minX
+                }
+
+                if (y > maxY) {
+                    y = maxY;
+                } else if (y < minY) {
+                    y = minY;
+                }
+                console.log(x, y)
+                rectDiv.style.left = x + "px";
+                rectDiv.style.top = y + "px";
+            }
+        }
+
+
+        function saveRectanglePosition(name, left, top) {
+
+            rectDiv.style.left = left
+            rectDiv.style.top = top
+        }
+
+
+        function stopDrag() {
+            isDragging = false;
+            rectDiv.addEventListener("mousemove", handleDrag);
+            rectDiv.addEventListener("mouseup", stopDrag);
+            // Update the position values in the rectangle object
+            rectDiv.style.left = (parseFloat(rectDiv.style.left)) + "px";
+            rectDiv.style.top = (parseFloat(rectDiv.style.top)) + "px";
+
+
+            // Save the updated rectangle position if needed
+            saveRectanglePosition(rectDiv.name, rectDiv.style.left, rectDiv.style.top);
+
+        }
     }
 
 
-};
+}
+;

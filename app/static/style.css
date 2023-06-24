@@ -1,19 +1,20 @@
+
+
 #canvasContainer {
-    position: relative;
-    width: 100%;
-    height: 0;
-    background-color: whitesmoke;
-    padding-bottom: 56.25%; /* 16:9 ratio */
+    background-color: antiquewhite;
+    aspect-ratio: 16 / 9;
+    max-width: 100%;
+    max-height: calc(100vh - 20px); /* Subtract any desired margin or padding */
+    margin: 0 auto;
+    border: 1px solid #000;
 }
 
-#canvasid {
-    position: absolute;
-    top: 0;
-    left: 0;
+canvas {
     width: 100%;
     height: 100%;
-      border: 1px solid black;
+    display: block;
 }
+
 
 
 .rectangle {
