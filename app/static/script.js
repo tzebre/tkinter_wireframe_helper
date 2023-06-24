@@ -59,6 +59,17 @@ window.onload = function () {
         isDrawing = false;
         var width = event.clientX - canvas.offsetLeft - rect.startX;
         var height = event.clientY - canvas.offsetTop - rect.startY;
+        console.log(rect.startX, rect.startY, width, height)
+        if (width < 0) {
+            width = -width
+            rect.startX = rect.startX - width
+        }
+        if (height < 0){
+            height = - height
+            rect.startY = rect.startY - height
+        }
+        console.log(rect.startX, rect.startY, width, height);
+
 
         openPopup(rect.startX, rect.startY, width, height);
     }
@@ -81,7 +92,7 @@ window.onload = function () {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/save_rectangle");
         xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
                     createRectangleDiv(rectangle);
@@ -92,15 +103,31 @@ window.onload = function () {
         };
         xhr.send(JSON.stringify(rectangle));
     }
+
     function createRectangleDiv(rectangle) {
         var rectDiv = document.createElement("div");
         rectDiv.className = "rectangle";
         rectDiv.style.position = "absolute";
-        rectDiv.style.left = rectangle.startX + "px";
-        rectDiv.style.top = rectangle.startY + "px";
+        rectDiv.style.left = (rectangle.startX + canvas.offsetLeft) + "px";
+        rectDiv.style.top = (rectangle.startY + canvas.offsetTop) + "px";
         rectDiv.style.width = rectangle.width + "px";
         rectDiv.style.height = rectangle.height + "px";
         rectDiv.style.backgroundColor = "red";
+        var nameDiv = document.createElement("div");
+        nameDiv.className = "rectangle-name";
+        nameDiv.style.textAlign = "center";
+        nameDiv.style.lineHeight = rectangle.height + "px";
+        nameDiv.innerText = rectangle.name;
+        var choicesButton = document.createElement("button");
+        choicesButton.innerText = "Select an option";
+        choicesButton.addEventListener("click", function () {
+            showChoices(rectangle.name);
+        });
+        rectDiv.appendChild(choicesButton);
+        rectDiv.appendChild(nameDiv);
         rectanglesContainer.appendChild(rectDiv);
+
     }
+
+
 };
