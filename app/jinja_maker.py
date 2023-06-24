@@ -43,13 +43,13 @@ def create_widget(widget_type, parent):
 class Application(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.element = {{dict_element}}
         self.title("###")  # change title here
         self.desired_W, self.desired_H, x, y = self.set_window_size()
         self.placed = {}    
+        self.element_dict = {{element_dict}}
         self.geometry(f"{self.desired_W}x{self.desired_H}+{x}+{y}")
         self.resizable(False,False)
-        self.create_place_element()
+        self.create_widget()
     
     def set_window_size(self):
         screen_width = self.winfo_screenwidth()
@@ -85,15 +85,18 @@ class Application(ctk.CTk):
         widget.configure(width=pixel_width, height=pixel_height, fg_color="red")
         widget.place(x=pixel_x, y=pixel_y)
 
-        
-    def create_place_element(self):
-        for elem_widget in self.element:
-            current = self.element[elem_widget]
-            type = current.get("widget")
-            widget = create_widget(type, self)
-            self.placed[elem_widget] = widget
-            self.place_widget(widget, current.get('left'), current.get("top"), current.get("width"), 
-                current.get("height"))
+    #create and place widget
+    def create_widget(self):
+    {% for element_name in element_dict %}
+        # element : {{element_name}}
+        current = self.element_dict['{{element_name}}']
+        type = current.get("widget")
+        widget = create_widget(type, self)
+        self.placed['{{element_name}}'] = widget
+        self.place_widget(widget, current.get('left'), current.get("top"), current.get("width"),current.get("height"))    
+    {% endfor %}
+
+            
             
 
 app = Application()
@@ -105,7 +108,7 @@ template = Template(template_str)
 
 # Render the template
 def render(dict_el):
-    return template.render(dict_element=dict_el)
+    return template.render(element_dict=dict_el)
 
 
 def save(dest, dict_el):
