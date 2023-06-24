@@ -84,30 +84,16 @@ window.onload = function () {
                 height: height,
                 name: name
             };
-            saveRectangle(rectangle);
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            createRectangleDiv(rectangle);
         }
     }
 
-    function saveRectangle(rectangle) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/save_rectangle");
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    createRectangleDiv(rectangle);
-                } else {
-                    console.error(xhr.statusText);
-                }
-            }
-        };
-        xhr.send(JSON.stringify(rectangle));
-        context.clearRect(0, 0, canvas.width, canvas.height);
-    }
 
     function createRectangleDiv(rectangle) {
         var rectDiv = document.createElement("div");
         rectDiv.className = rectangle.name;
+        rectDiv.id = "rectangle"
         rectDiv.style.position = "absolute";
         rectDiv.style.left = (rectangle.startX + canvas.offsetLeft) + "px";
         rectDiv.style.top = (rectangle.startY + canvas.offsetTop) + "px";
@@ -120,10 +106,40 @@ window.onload = function () {
         nameDiv.style.textAlign = "center";
         nameDiv.style.lineHeight = rectangle.height + "px";
         nameDiv.innerText = rectangle.name;
+        var widthInput = document.createElement("input");
+        widthInput.type = "number";
+        widthInput.placeholder = "Width";
+        widthInput.value = rectangle.width;
+
+        var heightInput = document.createElement("input");
+        heightInput.type = "number";
+        heightInput.placeholder = "Height";
+        heightInput.value = rectangle.height;
+        var validateBtn = document.createElement("button");
+        validateBtn.textContent = "Validate";
+        validateBtn.addEventListener("click", function () {
+            var width = parseInt(widthInput.value);
+            var height = parseInt(heightInput.value);
+
+            if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
+                rectangle.width = width;
+                rectangle.height = height;
+                rectDiv.style.width = width + "px";
+                rectDiv.style.height = height + "px";
+            }
+
+            widthInput.value = rectangle.width;
+            heightInput.value = rectangle.height;
+        });
+
+
         var dropdownBtn = document.createElement("button");
         dropdownBtn.className = "dropdown-button";
         dropdownBtn.textContent = "Options";
+        rectDiv.appendChild(widthInput);
+        rectDiv.appendChild(heightInput);
         rectDiv.appendChild(dropdownBtn);
+        rectDiv.appendChild(validateBtn)
         rectDiv.appendChild(nameDiv);
 
         rectanglesContainer.appendChild(rectDiv);
@@ -194,6 +210,49 @@ window.onload = function () {
             saveRectanglePosition(rectDiv.name, rectDiv.style.left, rectDiv.style.top);
 
         }
+    }
+
+    var saveAllBtn = document.getElementById("saveAllBtn");
+    saveAllBtn.addEventListener("click", saveAllRectangles);
+
+    function saveAllRectangles() {
+        var rectangles = {};
+        var rectangleDivs = document.querySelectorAll('[id="rectangle"]');
+        console.info(rectangleDivs)
+
+        for (var i = 0; i < rectangleDivs.length; i++) {
+            var rectDiv = rectangleDivs[i];
+            var name = rectDiv.className;
+            var rectangle = {
+                startX: parseInt(rectDiv.style.left),
+                startY: parseInt(rectDiv.style.top),
+                width: parseInt(rectDiv.style.width),
+                height: parseInt(rectDiv.style.height)
+            };
+
+            rectangles[name] = rectangle;
+            console.log(name)
+        }
+
+        var jsonData = JSON.stringify([rectangles]);
+        console.log(jsonData);
+
+        fetch('/save_all', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({rectangles: rectangles}),
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response or perform any necessary actions
+                console.log('Save all response:', data);
+            })
+            .catch(error => {
+                // Handle any errors that occurred during the request
+                console.error('Error saving all rectangles:', error);
+            });
     }
 
 

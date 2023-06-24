@@ -15,7 +15,9 @@ canvas {
     display: block;
 }
 
-
+#saveAllBtn {
+    font-size: 2rem;
+}
 
 .rectangle {
     position: absolute;

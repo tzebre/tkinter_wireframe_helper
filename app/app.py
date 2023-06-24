@@ -2,14 +2,20 @@ from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 rectangles = {}
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/save_rectangle', methods=['POST'])
-def save_rectangle():
-    rectangle = request.get_json()
-    # Perform any necessary validation or processing here
+
+@app.route('/save_all', methods=['POST'])
+def save_all():
+    data = request.json  # Assuming the data sent is in JSON format
+    rectangles = data['rectangles']  # Assuming the rectangles are stored in a 'rectangles' key
+    # Process the rectangles data as needed
+    # Save the rectangles in a dictionary or perform any other necessary actions
+    print(rectangles)
     return jsonify(success=True)
 
 
