@@ -154,7 +154,8 @@ window.onload = function () {
                 "width": parseFloat(actual_rect.style.width),
                 "height": parseFloat(actual_rect.style.height),
                 "top": parseFloat(actual_rect.style.top),
-                "left": parseFloat(actual_rect.style.left)
+                "left": parseFloat(actual_rect.style.left),
+                "widget": console.log(document.getElementById("myDropdown").value)
             }
 
         console.log(all_rect)
@@ -167,6 +168,10 @@ window.onload = function () {
         select_labl.textContent = "Select: " + actual_rect.id
         widthInput.value = parseInt(parseFloat(actual_rect.style.width) * canvas.clientWidth / 100)
         heightInput.value = parseInt(parseFloat(actual_rect.style.height) * canvas.clientHeight / 100)
+        var drop = document.getElementById("myDropdown")
+        drop.addEventListener("change", function () {
+            save_spec()
+        });
         widthInput.addEventListener("input", update_size);
         heightInput.addEventListener("input", update_size);
         save_spec()
