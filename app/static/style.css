@@ -36,8 +36,11 @@ body {
     display: flex;
 }
 
-.name_delete p {
+.name_delete  {
     flex: 1;
+}
+#move {
+    background-color: red;
 }
 canvas {
     width: 100%;

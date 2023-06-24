@@ -5,13 +5,13 @@ window.onload = function () {
     var aspectRatio = 16 / 9;
     var isDrawing = false;
     var rect = {};
+    var all_rect = {}
 
     canvas.addEventListener("mousedown", startDrawing);
     canvas.addEventListener("mousemove", drawRectangle);
     canvas.addEventListener("mouseup", stopDrawing);
 
     function resizeCanvas() {
-        console.log("resizing")
         var containerWidth = canvasContainer.offsetWidth;
         var containerHeight = canvasContainer.offsetHeight;
 
@@ -98,54 +98,17 @@ window.onload = function () {
         rectDiv.style.backgroundColor = "red";
         var customBtn = document.createElement("button");
         customBtn.textContent = "Custom: " + rectDiv.id;
-        customBtn.style.width = "50%"
+        customBtn.style.width = "100%"
         customBtn.style.height = "100%"
-        var moveBtn = document.createElement("button")
-        moveBtn.textContent = "Move"
-        moveBtn.style.width="50%"
-        moveBtn.style.height="100%"
 
         customBtn.addEventListener("click", function () {
             activeCustom(rectDiv.id);
         });
         rectDiv.appendChild(customBtn);
-        rectDiv.appendChild(moveBtn);
         canvasContainer.appendChild(rectDiv);
 
         var nameDiv = document.createElement("div");
         nameDiv.className = "rectangle-name";
-        moveBtn.addEventListener("click", startDrag);
-        var offsetX, offsetY;
-        var isDragging = false;
-
-        function startDrag(event) {
-            isDragging = true
-            offsetX = event.clientX - rectDiv.offsetLeft;
-            offsetY = event.clientY - rectDiv.offsetTop;
-            rectDiv.addEventListener("mousemove", handleDrag);
-        }
-
-        function handleDrag(event) {
-            if (isDragging) {
-                var x = event.clientX - offsetX;
-                var y = event.clientY - offsetY;
-                rectDiv.addEventListener("click", stopDrag);
-                verify_placement(x, y)
-            }
-        }
-
-
-        function stopDrag() {
-            isDragging = false;
-            saveRectanglePosition(rectDiv.name, rectDiv.style.left, rectDiv.style.top);
-
-        }
-
-        function saveRectanglePosition(name, left, top) {
-            rectDiv.style.left = left
-            rectDiv.style.top = top
-        }
-
 
         var dropdownBtn = document.getElementById("myDropdown")
         actual_rect = rectDiv
@@ -166,6 +129,7 @@ window.onload = function () {
         deleteRectangle(actual_rect);
     });
 
+
     function reset_custom() {
         actual_rect = "None"
         var widthInput = document.getElementById("width")
@@ -183,8 +147,20 @@ window.onload = function () {
         setup_custom(actual_rect)
     }
 
+    function save_spec() {
+        all_rect[actual_rect.id] =
+            {
+                "type": document.getElementById("myDropdown").value,
+                "width": parseFloat(actual_rect.style.width),
+                "height": parseFloat(actual_rect.style.height),
+                "top": parseFloat(actual_rect.style.top),
+                "left": parseFloat(actual_rect.style.left)
+            }
+
+        console.log(all_rect)
+    }
+
     function setup_custom() {
-        console.info(actual_rect)
         var widthInput = document.getElementById("width")
         var heightInput = document.getElementById("height")
         var select_labl = document.getElementById("selected_rect")
@@ -193,29 +169,59 @@ window.onload = function () {
         heightInput.value = parseInt(parseFloat(actual_rect.style.height) * canvas.clientHeight / 100)
         widthInput.addEventListener("input", update_size);
         heightInput.addEventListener("input", update_size);
+        save_spec()
+        var offsetX, offsetY;
+        var isDragging = false;
+        actual_rect.addEventListener("mousedown", startDrag)
+
+        function startDrag(event) {
+            isDragging = true
+            actual_rect.style.backgroundColor = "green"
+            offsetX = event.clientX - actual_rect.offsetLeft;
+            offsetY = event.clientY - actual_rect.offsetTop;
+            actual_rect.addEventListener("mousemove", handleDrag);
+        }
+
+        function handleDrag(event) {
+            if (isDragging) {
+                var x = event.clientX - offsetX;
+                var y = event.clientY - offsetY;
+                actual_rect.addEventListener("mouseup", stopDrag);
+                verify_placement(x, y)
+            }
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            actual_rect.removeEventListener("mousedown", startDrag)
+            actual_rect.removeEventListener("mousemove", handleDrag)
+            saveRectanglePosition(actual_rect.name, actual_rect.style.left, actual_rect.style.top);
+        }
+
+        function saveRectanglePosition(name, left, top) {
+            actual_rect.style.left = left
+            actual_rect.style.top = top
+            actual_rect.style.backgroundColor = "red"
+        }
 
         function update_size() {
             var widthInput = document.getElementById("width")
             var heightInput = document.getElementById("height")
             var width = parseFloat(widthInput.value);
             var height = parseFloat(heightInput.value);
-            console.log(width, height)
             if (width > canvas.clientWidth) {
                 width = canvas.clientWidth;
             }
             if (height > canvas.clientHeight) {
                 height = canvas.clientHeight;
             }
-            console.log(width, height)
 
             if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
                 actual_rect.style.width = ((width / canvas.clientWidth) * 100) + "%";
                 actual_rect.style.height = ((height / canvas.clientHeight) * 100) + "%";
             }
-            console.log(actual_rect.style.width)
             verify_placement(actual_rect.offsetLeft, actual_rect.offsetTop)
-
-
+            save_spec()
         }
 
     }
@@ -253,7 +259,8 @@ window.onload = function () {
 
     function saveAllRectangles() {
         var rectangles = {};
-        var rectangleDivs = document.querySelectorAll('[id="rectangle"]');
+        var rectangleDivs = document.querySelectorAll('[class="rectangle"]');
+        console.log(rectangleDivs)
 
         for (var i = 0; i < rectangleDivs.length; i++) {
             var rectDiv = rectangleDivs[i];
