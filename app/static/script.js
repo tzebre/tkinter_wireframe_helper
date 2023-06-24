@@ -5,8 +5,8 @@ window.onload = function () {
     var aspectRatio = 16 / 9;
 
     function resizeCanvas() {
-        var containerWidth = canvasContainer.offsetWidth;
-        var containerHeight = canvasContainer.offsetHeight;
+        var containerWidth = rectanglesContainer.offsetWidth;
+        var containerHeight = rectanglesContainer.offsetHeight;
 
         if (containerWidth / containerHeight > aspectRatio) {
             var canvasWidth = containerHeight * aspectRatio;
@@ -213,7 +213,6 @@ window.onload = function () {
         rectanglesContainer.appendChild(rectDiv);
         rectDiv.addEventListener("mousedown", startDrag);
 
-
         var offsetX, offsetY;
         var isDragging = false;
 
@@ -224,7 +223,6 @@ window.onload = function () {
             console.log(offsetY, offsetX);
             rectDiv.addEventListener("mousemove", handleDrag);
             rectDiv.addEventListener("mouseup", stopDrag);
-
         }
 
         function verify_placement(x, y) {
@@ -317,7 +315,5 @@ window.onload = function () {
                 console.error('Error saving all rectangles:', error);
             });
     }
-
-
 }
 ;
