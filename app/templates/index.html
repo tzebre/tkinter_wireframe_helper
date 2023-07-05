@@ -5,12 +5,15 @@
 	<link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" type="text/css">
 </head>
 <body>
-<h1>Rectangle Drawing App</h1>
-<div class="canva_spec">
-	<div , class="canvasContainer" id="canvasContainer">
-		<canvas id="canvas"></canvas>
+<div class="container">
+	<div class="header">
+		<h1>Rectangle Drawing App</h1>
+		<button id="saveAllBtn">Save All</button>
 	</div>
-	<div class="widget_spec">
+	<div class="white_board" id="white_board">
+		<canvas class="canvas" id="canvas"></canvas>
+	</div>
+	<div class="widget_modif">
 		<div class="name_delete">
 			<p id="selected_rect">Select:</p>
 			<button id="delete_rect">delete</button>
@@ -20,7 +23,7 @@
 		<p>Widget:
 			<select id="myDropdown">
 				{% for value in drop_values %}
-					<option value="{{ value }}">{{ value }}</option>
+				<option value="{{ value }}">{{ value }}</option>
 				{% endfor %}
 			</select>
 		</p>
@@ -29,7 +32,6 @@
 		</div>
 	</div>
 </div>
-<button id="saveAllBtn">Save All</button>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>

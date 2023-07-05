@@ -18,32 +18,30 @@ possible_args = {
                  "justify"],
 
 }
-
+widget_list = [
+    "Frame",
+    "ComboBox",
+    "ScrollableFrame",
+    "Textbox",
+    "Button",
+    "Label",
+    "Entry",
+    "OptionMenu",
+    "SegmentedButton",
+    "Switch",
+    "CheckBox",
+    "RadioButton",
+    "Slider"
+]
 
 @app.route('/')
 def index():
-    widget_list = [
-        "Frame",
-        "ComboBox",
-        "ScrollableFrame",
-        "Textbox",
-        "Button",
-        "Label",
-        "Entry",
-        "OptionMenu",
-        "SegmentedButton",
-        "Switch",
-        "CheckBox",
-        "RadioButton",
-        "Slider"
-    ]
     return render_template('index.html', drop_values=widget_list)
 
 
 @app.route('/save_all', methods=['POST'])
 def save_all():
     data = request.json  # Assuming the data sent is in JSON format
-    print(data)  # Assuming the rectangles are stored in a 'rectangles' key
     # Process the rectangles data as needed
     # Save the rectangles in a dictionary or perform any other necessary actions
     save("/Users/theomathieu/Downloads", data)
