@@ -1,61 +1,78 @@
+window.onload = function () {
+    var canvasContainer = document.getElementById("white_board");
+    var canvas = document.getElementById("canvas")
+    var context = canvas.getContext("2d");
+    var isDrawing = false;
+    var rect = {};
+    var aspectRatio = 16 / 9
+    var canvasRect = canvas.getBoundingClientRect();
+    canvas.addEventListener("mousedown", startDrawing);
+    canvas.addEventListener("mousemove", drawRectangle);
+    canvas.addEventListener("mouseup", stopDrawing);
+    canvas.addEventListener("mouseleave", stopDrawing);
+    resizeCanvas()
+
+
+    function resizeCanvas() {
+        var containerWidth = canvasContainer.offsetWidth;
+        var containerHeight = canvasContainer.offsetHeight;
+
+        if (containerWidth / containerHeight > aspectRatio) {
+            var canvasWidth = containerHeight * aspectRatio;
+            var canvasHeight = containerHeight;
+        } else {
+            var canvasWidth = containerWidth;
+            var canvasHeight = containerWidth / aspectRatio;
+        }
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+
+        var offsetX = (containerWidth - canvasWidth) / 2;
+        var offsetY = (containerHeight - canvasHeight) / 2;
+
+        canvas.style.left = offsetX + "px";
+        canvas.style.top = offsetY + "px";
+    }
+
+
 window.addEventListener('resize', resizeCanvas);
 
-function resizeCanvas() {
-    var parentDiv = document.getElementById('white_board');
-    var childDiv = parentDiv.querySelector('#canvas');
-    var Width = parentDiv.clientWidth;
-    var Height = parentDiv.clientHeight;
-    var aspectRatio = Width / Height;
-    var limitingDimension = aspectRatio < 1.7778 ? 'width' : 'height';
 
-    // Calculate the width and height of the maximum 16:9 rectangle based on the limiting dimension
-    var max169Width = limitingDimension === 'width' ? Width : Height * 1.7778;
-    var max169Height = limitingDimension === 'height' ? Height : Width / 1.7778;
-    childDiv.style.height = max169Height + "px"
-    childDiv.style.width = max169Width + "px"
+function startDrawing(event) {
+    isDrawing = true;
+    rect.startX = event.clientX - canvasRect.left;
+    rect.startY = event.clientY - canvasRect.top;
+}
+
+function drawRectangle(event) {
+    if (!isDrawing) return;
+
+    var x = event.clientX - canvasRect.left;
+    var y = event.clientY - canvasRect.top;
+
+    var width = x - rect.startX;
+    var height = y - rect.startY;
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.strokeRect(rect.startX, rect.startY, width, height);
+}
+
+function stopDrawing() {
+    isDrawing = false;
+    var width = event.clientX - rect.startX - canvasContainer.left;
+    var height = event.clientY - rect.startY - canvasContainer.top;
+    if (width < 0) {
+        width = -width
+        rect.startX = rect.startX - width
+    }
+    if (height < 0) {
+        height = -height
+        rect.startY = rect.startY - height
+    }
+}
 
 
 }
 
-resizeCanvas()
 
-window.onload = function () {
-    var canvas = document.getElementById('canvas')
-    var ctx = canvas.getContext("2d");
-    canvas.addEventListener('mousedown', startDrawing);
-    canvas.addEventListener('mousemove', drawRectangle);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseleave', stopDrawing);
-    var isDrawing = false;
-    var startPosition = {x: 0, y: 0};
-    var currentRectangle = {x: 0, y: 0, width: 0, height: 0};
 
-    function startDrawing(event) {
-        isDrawing = true;
-        startPosition.x = event.clientX - canvas.offsetLeft;
-        startPosition.y = event.clientY - canvas.offsetTop;
-    }
-
-    function drawRectangle(event) {
-        if (!isDrawing) return;
-
-        var currentX = event.clientX - canvas.offsetLeft;
-        var currentY = event.clientY - canvas.offsetTop;
-        currentRectangle.x = Math.min(startPosition.x, currentX);
-        currentRectangle.y = Math.min(startPosition.y, currentY);
-        currentRectangle.width = Math.abs(currentX - startPosition.x);
-        currentRectangle.height = Math.abs(currentY - startPosition.y);
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeRect(
-            currentRectangle.x,
-            currentRectangle.y,
-            currentRectangle.width,
-            currentRectangle.height
-        );
-    }
-
-    function stopDrawing() {
-        isDrawing = false;
-    }
-}
