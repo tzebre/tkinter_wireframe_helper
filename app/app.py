@@ -43,8 +43,6 @@ def get_all_widget():
     all_widget = {}
     for w in all:
         all_widget[w] = get_position(w)
-        print("get_po", get_position(w))
-    print("all_wid",all_widget)
     return all_widget
 
 def add_widget(widget):
@@ -80,10 +78,11 @@ def get_position(name):
     widget = all[name]
     #TODO verif conversion
     old_x, old_y, h, w = widget.get_relative('x', 'y', 'height', 'width')
-    new_x = ((old_x * width) / 100)
-    new_y = ((old_y * height) / 100)
-    new_h = (h * height) / 100
-    new_w = (w * width) / 100
+    print("old", old_x, old_y, h, w, width, height)
+    new_x = (old_x / 100) * width
+    new_y = (old_y / 100) * height
+    new_h = (h / 100) * height
+    new_w = (w / 100) * width
 
     return {"x": new_x, "y": new_y, "height": new_h, "width": new_w}
 
@@ -102,7 +101,6 @@ class Widget():
             to_return = []
             for request_arg in args:
                 try:
-                    print(self.coordinate[request_arg])
                     to_return.append(self.coordinate[request_arg])
                 except:
                     print(
@@ -115,7 +113,6 @@ class Widget():
 
 @app.route('/')
 def index():
-    print(all)
     return render_template('index.html', all_widget=get_all_widget(), drop_values=widget_list)
 
 
@@ -131,14 +128,12 @@ def save_all():
 @app.route('/new_widget', methods=['POST'])
 def new_widget():
     data = request.json
-    print(data)
     test = Widget(data["name"], data["coords"])
-    print(test.coordinate)
     add_widget(test)
     print(all.keys())
-    #print("position_all", get_position("test"))
+    print(get_size())
     print("position_wid", test.get_relative())
-    print("relative", test.get_name(), test.get_relative("x", "y"))
+    print("get_all widget", get_all_widget())
     return jsonify(success=True)
 
 
@@ -146,7 +141,6 @@ def new_widget():
 def resize():
     data = request.json
     set_sizing(**data)
-    print(get_size())
     return jsonify(success=True)
 
 

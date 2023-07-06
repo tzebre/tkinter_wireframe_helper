@@ -14,8 +14,8 @@
 		<canvas class="canvas" id="canvas"></canvas>
 		<!-- iterate existing rectangle -->
 		{% for widget in all_widget %}
-		 <div class="widget" id="#{{widget}}" style="position:absolute;top: {{all_widget[widget]['x']}}px ;
-		 left:{{all_widget[widget]['y']}}px; width: {{all_widget[widget]['width']}}px;
+		 <div class="widget" id="#{{widget}}" style="position:absolute;top: {{all_widget[widget]['y']}}px ;
+		 left:{{all_widget[widget]['x']}}px; width: {{all_widget[widget]['width']}}px;
 		 height:{{all_widget[widget]['height']}}px">test </div>
 		{% endfor %}
 	</div>
