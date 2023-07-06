@@ -43,6 +43,7 @@ def get_all_widget():
     all_widget = {}
     for w in all:
         all_widget[w] = get_position(w)
+        print("get_po", get_position(w))
     print("all_wid",all_widget)
     return all_widget
 
@@ -77,10 +78,10 @@ def set_sizing(**kwargs):
 
 def get_position(name):
     widget = all[name]
-    print(x, y, height)
+    #TODO verif conversion
     old_x, old_y, h, w = widget.get_relative('x', 'y', 'height', 'width')
-    new_x = x + ((old_x * width) / 100)
-    new_y = y + ((old_y * height) / 100)
+    new_x = ((old_x * width) / 100)
+    new_y = ((old_y * height) / 100)
     new_h = (h * height) / 100
     new_w = (w * width) / 100
 
@@ -101,6 +102,7 @@ class Widget():
             to_return = []
             for request_arg in args:
                 try:
+                    print(self.coordinate[request_arg])
                     to_return.append(self.coordinate[request_arg])
                 except:
                     print(
@@ -131,9 +133,10 @@ def new_widget():
     data = request.json
     print(data)
     test = Widget(data["name"], data["coords"])
+    print(test.coordinate)
     add_widget(test)
     print(all.keys())
-    print("position_all", get_position("test"))
+    #print("position_all", get_position("test"))
     print("position_wid", test.get_relative())
     print("relative", test.get_name(), test.get_relative("x", "y"))
     return jsonify(success=True)

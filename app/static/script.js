@@ -80,6 +80,7 @@ window.onload = function () {
 
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.strokeRect(rect.startX, rect.startY, width, height);
+
     }
 
     function stopDrawing(event) {
