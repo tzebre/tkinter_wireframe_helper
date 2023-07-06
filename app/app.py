@@ -38,6 +38,8 @@ y = 0
 height = 100
 width = 100
 all = {}
+selected = {"name": "", "height": 0, "width": 0}
+
 
 def get_all_widget():
     all_widget = {}
@@ -45,14 +47,15 @@ def get_all_widget():
         all_widget[w] = get_position(w)
     return all_widget
 
+
 def add_widget(widget):
     name = widget.name
     value = widget
     all[name] = value
 
 
-def delete_widget(widget):
-    del all[widget.name]
+def delete_widget(widget_name):
+    del all[widget_name]
 
 
 def get_size():
@@ -76,9 +79,8 @@ def set_sizing(**kwargs):
 
 def get_position(name):
     widget = all[name]
-    #TODO verif conversion
+    # TODO verif conversion
     old_x, old_y, h, w = widget.get_relative('x', 'y', 'height', 'width')
-    print("old", old_x, old_y, h, w, width, height)
     new_x = (old_x / 100) * width
     new_y = (old_y / 100) * height
     new_h = (h / 100) * height
@@ -113,7 +115,7 @@ class Widget():
 
 @app.route('/')
 def index():
-    return render_template('index.html', all_widget=get_all_widget(), drop_values=widget_list)
+    return render_template('index.html', all_widget=get_all_widget(), drop_values=widget_list, selected=selected)
 
 
 @app.route('/save_all', methods=['POST'])
@@ -130,10 +132,6 @@ def new_widget():
     data = request.json
     test = Widget(data["name"], data["coords"])
     add_widget(test)
-    print(all.keys())
-    print(get_size())
-    print("position_wid", test.get_relative())
-    print("get_all widget", get_all_widget())
     return jsonify(success=True)
 
 
@@ -141,6 +139,25 @@ def new_widget():
 def resize():
     data = request.json
     set_sizing(**data)
+    return jsonify(success=True)
+
+
+@app.route('/select_widget', methods=['POST'])
+def select_widget():
+    data = request.json
+    selected["name"] = data["name"]
+    coords = get_position(selected["name"])
+    selected["height"] = int(coords["height"])
+    selected["width"] = int(coords["width"])
+    return jsonify(success=True)
+
+@app.route('/delete', methods=['POST'])
+def delete():
+    data = request.json
+    name = data["name"]
+    delete_widget(name)
+    global selected
+    selected = {"name": "", "height": 0, "width": 0}
     return jsonify(success=True)
 
 

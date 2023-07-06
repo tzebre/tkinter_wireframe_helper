@@ -9,23 +9,24 @@
 	<div class="header">
 		<h1>Rectangle Drawing App</h1>
 		<button id="saveAllBtn">Save All</button>
+		<button id="refresh">Resize</button>
 	</div>
 	<div class="white_board" id="white_board">
 		<canvas class="canvas" id="canvas"></canvas>
 		<!-- iterate existing rectangle -->
 		{% for widget in all_widget %}
-		 <div class="widget" id="#{{widget}}" style="position:absolute;top: {{all_widget[widget]['y']}}px ;
+		 <div class="widget" id="{{widget}}" style="position:absolute;top: {{all_widget[widget]['y']}}px ;
 		 left:{{all_widget[widget]['x']}}px; width: {{all_widget[widget]['width']}}px;
-		 height:{{all_widget[widget]['height']}}px">test </div>
+		 height:{{all_widget[widget]['height']}}px">{{widget}}</div>
 		{% endfor %}
 	</div>
 	<div class="widget_modif">
 		<div class="name_delete">
-			<p id="selected_rect">Select:</p>
+			<p>Select:</p><p id="selected_rect">{{selected["name"]}}</p>
 			<button id="delete_rect">delete</button>
 		</div>
-		<p>Width: <input class="input_width" id="width" type="number"> px</p>
-		<p>Height: <input class="input_width" id="height" type="number"> px</p>
+		<p>Width:<input class="input_width" id="width" type="number" value="{{selected['width']}}"> px</p>
+		<p>Height: <input class="input_width" id="height" type="number", value="{{selected['height']}}"> px</p>
 		<p>Widget:
 			<select id="myDropdown">
 				{% for value in drop_values %}

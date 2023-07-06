@@ -1,6 +1,8 @@
 window.onload = function () {
     var canvasContainer = document.getElementById("white_board");
     var canvas = document.getElementById("canvas")
+    var resize_btn = document.getElementById("refresh")
+    var delete_btn = document.getElementById("delete_rect")
     var context = canvas.getContext("2d");
     var isDrawing = false;
     var rect = {};
@@ -9,7 +11,36 @@ window.onload = function () {
     canvas.addEventListener("mousedown", startDrawing);
     canvas.addEventListener("mousemove", drawRectangle);
     canvas.addEventListener("mouseup", stopDrawing);
+    delete_btn.addEventListener("click", delete_widget)
+    resize_btn.addEventListener("click", function () {
+        resizeCanvas();
+        window.location.href = '/';
+    })
     resizeCanvas()
+
+    function delete_widget() {
+        let name = document.getElementById("selected_rect")
+        let dict_del = {
+            name: name.textContent
+        }
+        fetch('/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dict_del)
+        })
+            .then(response => {
+                // Handle the response from Flask
+                window.location.href = '/';
+
+
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+    }
 
 
     function resizeCanvas() {
@@ -57,10 +88,8 @@ window.onload = function () {
             .catch(error => {
                 console.error('Error:', error);
             });
+
     }
-
-
-    window.addEventListener('resize', resizeCanvas);
 
 
     function startDrawing(event) {
@@ -107,12 +136,12 @@ window.onload = function () {
 
         function openPopup() {
             let name = prompt("Please enter widget name:");
-            console.log(name)
             if (name) {
                 let element = document.getElementById(name);
                 if (element) {
                     alert('Choice Incorrect: ID already exists');
                 } else {
+
                     let res_dict = {
                             name: name,
                             coords: {
@@ -132,11 +161,12 @@ window.onload = function () {
                     })
                         .then(response => {
                             // Handle the response from Flask
+                            window.location.href = '/';
                         })
                         .catch(error => {
                             console.error('Error:', error);
                         });
-                    window.location.href = '/';
+
 
                 }
             } else {
@@ -145,6 +175,34 @@ window.onload = function () {
 
         }
     }
+
+    var clickableElements = document.querySelectorAll('.widget');
+
+    clickableElements.forEach(function (element) {
+        element.addEventListener('click', function () {
+            // Code to execute when the element is clicked
+            console.log('Element clicked:', element.textContent);
+            let selected_widget = {
+                name: element.id,
+            }
+
+            fetch('/select_widget', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(selected_widget)
+            })
+                .then(response => {
+                    // Handle the response from Flask
+                    window.location.href = '/';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+
+        });
+    });
 }
 
 

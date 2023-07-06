@@ -38,3 +38,7 @@ body {
     background-color: aqua;
     z-index: 2;
 }
+.name_delete {
+    display: flex;
+    justify-content: space-between;
+}
