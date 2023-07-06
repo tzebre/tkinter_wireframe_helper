@@ -46,6 +46,10 @@ def add_widget(widget):
     all[name] = value
 
 
+def delete_widget(widget):
+    del all[widget.name]
+
+
 def get_size():
     return x, y, height, width
 
@@ -118,11 +122,9 @@ def save_all():
 @app.route('/new_widget', methods=['POST'])
 def new_widget():
     data = request.json
-    test = Widget("test", data)
+    test = Widget(len(all), data)
     add_widget(test)
-    print(all)
-    print(get_size())
-    print("position_all", get_position('test'))
+    print("position_all", get_position(len(all) - 1))
     print("position_wid", test.get_relative())
     print("relative", test.get_name(), test.get_relative("x", "y"))
     return jsonify(success=True)
