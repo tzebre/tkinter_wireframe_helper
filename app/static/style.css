@@ -20,6 +20,7 @@ body {
 .white_board {
     grid-area: 2 / 1 / 7 / 5;
     margin: 10px;
+    position: relative;
 }
 
 .widget_modif {
@@ -29,4 +30,6 @@ body {
 
 .canvas {
     background-color: #B8CBD0;
+    position: relative;
+    z-index: 1;
 }

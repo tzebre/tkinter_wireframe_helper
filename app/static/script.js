@@ -9,7 +9,6 @@ window.onload = function () {
     canvas.addEventListener("mousedown", startDrawing);
     canvas.addEventListener("mousemove", drawRectangle);
     canvas.addEventListener("mouseup", stopDrawing);
-    canvas.addEventListener("mouseleave", stopDrawing);
     resizeCanvas()
 
 
@@ -28,12 +27,16 @@ window.onload = function () {
         }
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
-
+        /*
         let offsetX = (containerWidth - canvasWidth) / 2;
         let offsetY = (containerHeight - canvasHeight) / 2;
 
         canvas.style.left = offsetX + "px";
         canvas.style.top = offsetY + "px";
+
+         */
+        let offsetX = 0
+        let offsetY = 0
 
         let res_dict = {
             x: offsetX,
@@ -83,10 +86,10 @@ window.onload = function () {
         isDrawing = false;
         let x = event.clientX - canvasRect.left;
         let y = event.clientY - canvasRect.top;
-        if (x < 0){
+        if (x < 0) {
             x = 0
         }
-        if (y <0){
+        if (y < 0) {
             y = 0
         }
         let width = x - rect.startX;
@@ -99,28 +102,47 @@ window.onload = function () {
             height = -height
             rect.startY = rect.startY - height
         }
-        console.log(rect.startX, rect.startY, height, width, canvas.width, canvas.height)
+        openPopup()
 
-        let res_dict = {
-            x: rect.startX / canvas.width * 100,
-            y: rect.startY / canvas.height * 100,
-            width: width / canvas.width * 100,
-            height: height / canvas.height * 100,
-        };
-        fetch('/new_widget', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(res_dict)
-        })
-            .then(response => {
-                // Handle the response from Flask
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+        function openPopup() {
+            let name = prompt("Please enter widget name:");
+            console.log(name)
+            if (name) {
+                let element = document.getElementById(name);
+                if (element) {
+                    alert('Choice Incorrect: ID already exists');
+                } else {
+                    let res_dict = {
+                            name: name,
+                            coords: {
+                                x: rect.startX / canvas.width * 100,
+                                y: rect.startY / canvas.height * 100,
+                                width: width / canvas.width * 100,
+                                height: height / canvas.height * 100,
+                            }
+                        }
+                    ;
+                    fetch('/new_widget', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(res_dict)
+                    })
+                        .then(response => {
+                            // Handle the response from Flask
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+                    window.location.href = '/';
 
+                }
+            } else {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+            }
+
+        }
     }
 }
 

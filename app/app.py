@@ -39,6 +39,12 @@ height = 100
 width = 100
 all = {}
 
+def get_all_widget():
+    all_widget = {}
+    for w in all:
+        all_widget[w] = get_position(w)
+    print("all_wid",all_widget)
+    return all_widget
 
 def add_widget(widget):
     name = widget.name
@@ -107,7 +113,8 @@ class Widget():
 
 @app.route('/')
 def index():
-    return render_template('index.html', drop_values=widget_list)
+    print(all)
+    return render_template('index.html', all_widget=get_all_widget(), drop_values=widget_list)
 
 
 @app.route('/save_all', methods=['POST'])
@@ -122,9 +129,11 @@ def save_all():
 @app.route('/new_widget', methods=['POST'])
 def new_widget():
     data = request.json
-    test = Widget(len(all), data)
+    print(data)
+    test = Widget(data["name"], data["coords"])
     add_widget(test)
-    print("position_all", get_position(len(all) - 1))
+    print(all.keys())
+    print("position_all", get_position("test"))
     print("position_wid", test.get_relative())
     print("relative", test.get_name(), test.get_relative("x", "y"))
     return jsonify(success=True)

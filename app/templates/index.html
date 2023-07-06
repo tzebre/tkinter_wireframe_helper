@@ -13,6 +13,11 @@
 	<div class="white_board" id="white_board">
 		<canvas class="canvas" id="canvas"></canvas>
 		<!-- iterate existing rectangle -->
+		{% for widget in all_widget %}
+		 <div id="#{{widget}}" style="position:relative;top: {{all_widget[widget]['x']}}px ;
+		 left:{{all_widget[widget]['y']}}px; width: {{all_widget[widget]['width']}}px;
+		 height:{{all_widget[widget]['height']}}px; background-color: red; z-index: 2">test </div>
+		{% endfor %}
 	</div>
 	<div class="widget_modif">
 		<div class="name_delete">
