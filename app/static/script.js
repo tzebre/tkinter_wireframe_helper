@@ -3,6 +3,7 @@ window.onload = function () {
     var canvas = document.getElementById("canvas")
     var resize_btn = document.getElementById("refresh")
     var delete_btn = document.getElementById("delete_rect")
+    var drop_btn = document.getElementById("myDropdown")
     var context = canvas.getContext("2d");
     var isDrawing = false;
     var rect = {};
@@ -12,11 +13,35 @@ window.onload = function () {
     canvas.addEventListener("mousemove", drawRectangle);
     canvas.addEventListener("mouseup", stopDrawing);
     delete_btn.addEventListener("click", delete_widget)
+    drop_btn.addEventListener("change", dropchange)
     resize_btn.addEventListener("click", function () {
         resizeCanvas();
         window.location.href = '/';
     })
     resizeCanvas()
+
+    function dropchange() {
+        console.log(drop_btn.value)
+        drop_dict = {
+            type: drop_btn.value
+        }
+        fetch('/drop_choice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(drop_dict)
+        })
+            .then(response => {
+                // Handle the response from Flask
+                window.location.href = '/';
+
+
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
 
     function delete_widget() {
         let name = document.getElementById("selected_rect")
@@ -204,6 +229,8 @@ window.onload = function () {
         });
     });
 }
+
+
 
 
 

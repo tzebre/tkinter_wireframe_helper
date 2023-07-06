@@ -1,12 +1,29 @@
+@font-face {
+  font-family: 'Source Code Pro';
+  src: url('static/SourceCodePro-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
     background-color: #709CA7;
 }
+
+button, select, input {
+    font-family: "Source Code Pro", serif;
+}
+
+input {
+    width: 30%;
+}
+
 
 .container {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: repeat(6, 1fr);
     height: 100vh;
+    font-family: "Source Code Pro", serif;
 }
 
 .header {

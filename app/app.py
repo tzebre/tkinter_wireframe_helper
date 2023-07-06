@@ -38,7 +38,7 @@ y = 0
 height = 100
 width = 100
 all = {}
-selected = {"name": "", "height": 0, "width": 0}
+selected = {"name": "", "height": 0, "width": 0, "type":"", "spec":{}}
 
 
 def get_all_widget():
@@ -160,6 +160,13 @@ def delete():
     selected = {"name": "", "height": 0, "width": 0}
     return jsonify(success=True)
 
+@app.route('/drop_choice', methods=['POST'])
+def drop_choice():
+    data = request.json
+    type = data["type"]
+    global selected
+    selected["type"] = type
+    return jsonify(success=True)
 
 if __name__ == '__main__':
     app.run()

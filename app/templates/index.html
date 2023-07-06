@@ -26,16 +26,20 @@
 			<button id="delete_rect">delete</button>
 		</div>
 		<p>Width:<input class="input_width" id="width" type="number" value="{{selected['width']}}"> px</p>
-		<p>Height: <input class="input_width" id="height" type="number", value="{{selected['height']}}"> px</p>
+		<p>Height: <input class="input_width" id="height" type="number" value="{{selected['height']}}"> px</p>
 		<p>Widget:
-			<select id="myDropdown">
+			<select id="myDropdown" >
 				{% for value in drop_values %}
-				<option value="{{ value }}">{{ value }}</option>
+					{%  if value == selected["type"] %}
+						<option value="{{ value }}" selected>{{ value }}</option>
+					{% else %}
+						<option value="{{ value }}">{{ value }}</option>
+					{% endif %}
 				{% endfor %}
 			</select>
 		</p>
 		<div class="custom_widget">
-			dep on the widget
+			<p>Type: {{ selected["type"] }}</p>
 		</div>
 	</div>
 </div>
