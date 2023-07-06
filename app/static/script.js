@@ -14,21 +14,23 @@ window.onload = function () {
 
 
     function resizeCanvas() {
-        var containerWidth = canvasContainer.offsetWidth;
-        var containerHeight = canvasContainer.offsetHeight;
+        let containerWidth = canvasContainer.offsetWidth;
+        let containerHeight = canvasContainer.offsetHeight;
+        let canvasWidth = 0;
+        let canvasHeight = 0;
 
-        if (containerWidth / containerHeight > aspectRatio) {
-            var canvasWidth = containerHeight * aspectRatio;
-            var canvasHeight = containerHeight;
+        if (containerWidth / containerHeight <= aspectRatio) {
+            canvasWidth = containerWidth;
+            canvasHeight = containerWidth / aspectRatio;
         } else {
-            var canvasWidth = containerWidth;
-            var canvasHeight = containerWidth / aspectRatio;
+            canvasWidth = containerHeight * aspectRatio;
+            canvasHeight = containerHeight;
         }
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
 
-        var offsetX = (containerWidth - canvasWidth) / 2;
-        var offsetY = (containerHeight - canvasHeight) / 2;
+        let offsetX = (containerWidth - canvasWidth) / 2;
+        let offsetY = (containerHeight - canvasHeight) / 2;
 
         canvas.style.left = offsetX + "px";
         canvas.style.top = offsetY + "px";

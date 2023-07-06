@@ -19,6 +19,7 @@ body {
 
 .white_board {
     grid-area: 2 / 1 / 7 / 5;
+    margin: 10px;
 }
 
 .widget_modif {
