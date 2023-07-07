@@ -4,6 +4,7 @@ window.onload = function () {
     var resize_btn = document.getElementById("refresh")
     var delete_btn = document.getElementById("delete_rect")
     var drop_btn = document.getElementById("myDropdown")
+    var save_btn = document.getElementById("saveAllBtn")
     var context = canvas.getContext("2d");
     var isDrawing = false;
     var rect = {};
@@ -14,11 +15,16 @@ window.onload = function () {
     canvas.addEventListener("mouseup", stopDrawing);
     delete_btn.addEventListener("click", delete_widget)
     drop_btn.addEventListener("change", dropchange)
+    save_btn.addEventListener("click", save_all)
     resize_btn.addEventListener("click", function () {
         resizeCanvas();
         window.location.href = '/';
     })
     resizeCanvas()
+
+    function save_all() {
+        window.location.href = '/save_all';
+    }
 
     function dropchange() {
         console.log(drop_btn.value)

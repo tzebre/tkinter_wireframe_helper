@@ -3,20 +3,6 @@ from jinja_maker import save
 
 app = Flask(__name__)
 
-possible_args = {
-    "Button": ["corner_radius", "border_width", "border_spacing", "fg_color", "hover_color", "border_color",
-               "text_color", "text_color_disabled", "text", "font", "textvariable", "image", "state", "hover",
-               "command", "compound", "anchor"],
-    "CheckBox": ["checkbox_width", "checkbox_height", "corner_radius", "border_width" "fg_color",
-                 "hover_color", "border_color",
-                 "text_color", "text_color_disabled", "text", "font", "textvariable", "state", "hover",
-                 "command", "variable", "onvalue", "offvalue"],
-    "ComboBox": ["corner_radius", "border_width", "fg_color", "border_color", "button_color", "button_hover_color",
-                 "dropdown_fg_color", "dropdown_hover_color", "dropdown_text_color", "test_color",
-                 "test_color_disabled", "font", "dropdown_font", "values", "hover", "state", "command", "variable",
-                 "justify"],
-
-}
 widget_list = [
     "Frame",
     "ComboBox",
@@ -38,7 +24,7 @@ y = 0
 height = 100
 width = 100
 all = {}
-selected = {"name": "", "height": 0, "width": 0, "type":"", "spec":{}}
+selected = {"name": "", "height": 0, "width": 0, "type": "", "spec": {}}
 
 
 def get_all_widget():
@@ -77,9 +63,18 @@ def set_sizing(**kwargs):
             print("error")
 
 
+def get_final():
+    full_dict = {}
+    for widget in all:
+        wid_class = all[widget]
+        coord = wid_class.coordinate
+        full_dict[widget] = {'type': wid_class.type, 'width': coord["width"], 'height': coord["height"],
+                             'y': coord["y"], 'x': coord["x"]}
+    return full_dict
+
+
 def get_position(name):
     widget = all[name]
-    # TODO verif conversion
     old_x, old_y, h, w = widget.get_relative('x', 'y', 'height', 'width')
     new_x = (old_x / 100) * width
     new_y = (old_y / 100) * height
@@ -89,8 +84,8 @@ def get_position(name):
     return {"x": new_x, "y": new_y, "height": new_h, "width": new_w}
 
 
-class Widget():
-    def __init__(self, name, coordinate, widget_type=None):
+class Widget:
+    def __init__(self, name, coordinate, widget_type="Frame"):
         self.name = name
         self.coordinate = coordinate
         self.type = widget_type
@@ -118,13 +113,12 @@ def index():
     return render_template('index.html', all_widget=get_all_widget(), drop_values=widget_list, selected=selected)
 
 
-@app.route('/save_all', methods=['POST'])
+@app.route('/save_all')
 def save_all():
-    data = request.json  # Assuming the data sent is in JSON format
-    # Process the rectangles data as needed
-    # Save the rectangles in a dictionary or perform any other necessary actions
-    save("/Users/theomathieu/Downloads", data)
-    return jsonify(success=True)
+    final_widgets = get_final()
+    # TODO ask for a path to save the template
+    save("/Users/theomathieu/Downloads", final_widgets)# CHANGE PATH
+    return render_template('index.html', all_widget=get_all_widget(), drop_values=widget_list, selected=selected)
 
 
 @app.route('/new_widget', methods=['POST'])
@@ -151,6 +145,7 @@ def select_widget():
     selected["width"] = int(coords["width"])
     return jsonify(success=True)
 
+
 @app.route('/delete', methods=['POST'])
 def delete():
     data = request.json
@@ -160,13 +155,16 @@ def delete():
     selected = {"name": "", "height": 0, "width": 0}
     return jsonify(success=True)
 
+
 @app.route('/drop_choice', methods=['POST'])
 def drop_choice():
     data = request.json
     type = data["type"]
     global selected
     selected["type"] = type
+    all[selected["name"]].type = type
     return jsonify(success=True)
+
 
 if __name__ == '__main__':
     app.run()

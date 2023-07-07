@@ -123,8 +123,8 @@ def save(dest, dict_el):
 
 if __name__ == '__main__':
     test_dict = {
-        'A': {'type': 'Entry', 'width': 20.8517, 'height': 23.4987, 'y': 18.0157, 'x': 33.627, 'widget': 'Entry'},
-        'B': {'type': 'Slider', 'width': 23.4949, 'height': 20.1044, 'y': 57.1802, 'x': 51.6887, 'widget': 'Slider'},
-        'C': {'type': 'Slider', 'width': 18.649, 'height': 8.87728, 'y': 26.3708, 'x': 74.8899, 'widget': 'Slider'}}
+        'A': {'type': 'Entry', 'width': 20.8517, 'height': 23.4987, 'y': 18.0157, 'x': 33.627},
+        'B': {'type': 'Slider', 'width': 23.4949, 'height': 20.1044, 'y': 57.1802, 'x': 51.6887},
+        'C': {'type': 'Slider', 'width': 18.649, 'height': 8.87728, 'y': 26.3708, 'x': 74.8899}}
 
     save("/Users/theomathieu/Downloads", test_dict)
