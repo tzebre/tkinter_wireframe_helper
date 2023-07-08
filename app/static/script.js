@@ -5,6 +5,10 @@ window.onload = function () {
     var delete_btn = document.getElementById("delete_rect")
     var drop_btn = document.getElementById("myDropdown")
     var save_btn = document.getElementById("saveAllBtn")
+    var height_btn = document.getElementById("height")
+    var width_btn = document.getElementById("width")
+    var x_btn = document.getElementById("x")
+    var y_btn = document.getElementById("y")
     var context = canvas.getContext("2d");
     var isDrawing = false;
     var rect = {};
@@ -16,11 +20,44 @@ window.onload = function () {
     delete_btn.addEventListener("click", delete_widget)
     drop_btn.addEventListener("change", dropchange)
     save_btn.addEventListener("click", save_all)
+    height_btn.addEventListener("input", size_change)
+    width_btn.addEventListener("input", size_change)
+    x_btn.addEventListener("input", size_change)
+    y_btn.addEventListener("input", size_change)
     resize_btn.addEventListener("click", function () {
         resizeCanvas();
         window.location.href = '/';
     })
     resizeCanvas()
+
+    function size_change() {
+        modify_widget(x_btn.value, y_btn.value, height_btn.value, width_btn.value)
+    }
+
+    function modify_widget(x, y, h, w) {
+        verify_border(parseInt(x), parseInt(x) + parseInt(w), parseInt(y), parseInt(y) + parseInt(h))
+    }
+
+    function verify_border(start, end, top, bottom) {
+        console.log(start, end, top, bottom)
+        console.log(canvas.width, canvas.height)
+        if (bottom >= canvas.height) {
+            if (top > 0) {
+                y_btn.value = parseInt(y_btn.value) - 1
+            } else {
+                height_btn.value = parseInt(height_btn.value) - 1
+            }
+
+        } else {
+            if (end >= canvas.width) {
+                if (start > 0) {
+                    x_btn.value = parseInt(x_btn.value) - 1
+                } else {
+                    width_btn.value = parseInt(width_btn.value) - 1
+                }
+            }
+        }
+    }
 
     function save_all() {
         window.location.href = '/save_all';
@@ -212,7 +249,6 @@ window.onload = function () {
     clickableElements.forEach(function (element) {
         element.addEventListener('click', function () {
             // Code to execute when the element is clicked
-            console.log('Element clicked:', element.textContent);
             let selected_widget = {
                 name: element.id,
             }

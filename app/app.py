@@ -24,7 +24,7 @@ y = 0
 height = 100
 width = 100
 all = {}
-selected = {"name": "", "height": 0, "width": 0, "type": "", "spec": {}}
+selected = {"name": "", "x": 0, "y": 0, "height": 0, "width": 0, "type": "", "spec": {}}
 
 
 def get_all_widget():
@@ -117,7 +117,7 @@ def index():
 def save_all():
     final_widgets = get_final()
     # TODO ask for a path to save the template
-    save("/Users/theomathieu/Downloads", final_widgets)# CHANGE PATH
+    save("/Users/theomathieu/Downloads", final_widgets)  # CHANGE PATH
     return render_template('index.html', all_widget=get_all_widget(), drop_values=widget_list, selected=selected)
 
 
@@ -143,6 +143,9 @@ def select_widget():
     coords = get_position(selected["name"])
     selected["height"] = int(coords["height"])
     selected["width"] = int(coords["width"])
+    selected["x"] = int(coords["x"])
+    selected["y"] = int(coords["y"])
+    selected["type"] = all[selected["name"]].type
     return jsonify(success=True)
 
 
@@ -152,7 +155,7 @@ def delete():
     name = data["name"]
     delete_widget(name)
     global selected
-    selected = {"name": "", "height": 0, "width": 0}
+    selected = {"name": "", "x": 0, "y": 0, "height": 0, "width": 0, "type": "", "spec": {}}
     return jsonify(success=True)
 
 
